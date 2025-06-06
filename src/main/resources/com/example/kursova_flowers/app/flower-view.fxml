@@ -17,6 +17,7 @@
     <!-- Лівий бортик -->
     <left>
         <VBox fx:id="leftPane" prefWidth="250" style="-fx-background-color: #cccccc;">
+            <Button fx:id="backToMainButton" onAction="#handleOpenScene" text="← Повернутись на головну" maxWidth="Infinity" style="-fx-font-size: 14px;"/>
             <Label text="Тип квітки" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
             <ListView fx:id="flowerTypeList" VBox.vgrow="ALWAYS"/>
             <Button fx:id="addButton" text="+" maxWidth="100" style="-fx-font-size: 20px; -fx-font-weight: bold;" />

@@ -29,6 +29,7 @@
             <Button text="створити" fx:id="createBtn" styleClass="menu-button"/>
             <Button text="букети" fx:id="bouquetsBtn" styleClass="menu-button"/>
             <Button text="квіти" fx:id="flowersBtn" styleClass="menu-button"/>
+            <Button text="аксесуари" fx:id="accessorysBtn" styleClass="menu-button"/>
             <Button text="вихід" fx:id="exitBtn" styleClass="menu-button"/>
         </VBox>
     </center>

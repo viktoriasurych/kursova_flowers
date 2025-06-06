@@ -5,12 +5,15 @@ import com.example.kursova_flowers.dao.FlowerTypeDAO;
 import com.example.kursova_flowers.db.DBManager;
 import com.example.kursova_flowers.model.Flower;
 import com.example.kursova_flowers.model.FlowerType;
+import com.example.kursova_flowers.util.SceneUtil;
+import com.example.kursova_flowers.util.Scenes;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -44,6 +47,12 @@ public class FlowerViewController {
     @FXML private TableColumn<Flower, Void> saveColumn;
     @FXML private TableColumn<Flower, Void> deleteColumn;
 
+    @FXML
+    private Button backToMainButton;
+    @FXML
+    private void handleOpenScene(ActionEvent event) {
+        SceneUtil.openSceneFromButton(backToMainButton, Scenes.MAIN);
+    }
 
     private final ObservableList<FlowerType> flowerTypes = FXCollections.observableArrayList();
 
@@ -87,6 +96,8 @@ public class FlowerViewController {
         setupEditableColumns();
         setupActionColumns(); // для ✔ і ✖
         flowerTable.setItems(flowers);
+
+
     }
 
     private void loadFlowerTypes() {

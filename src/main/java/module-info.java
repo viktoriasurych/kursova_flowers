@@ -4,6 +4,7 @@ module com.example.kursova_flowers {
 
     requires com.dlsc.formsfx;
     requires java.sql;
+    requires java.desktop;
 
     // opens com.example.kursova_flowers to javafx.fxml;
     //exports com.example.kursova_flowers;

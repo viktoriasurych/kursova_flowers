@@ -4,6 +4,8 @@ import com.example.kursova_flowers.db.DBManager;
 import com.example.kursova_flowers.util.SceneUtil;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import com.example.kursova_flowers.util.Scenes;
+
 
 public class Main extends Application {
 
@@ -16,7 +18,7 @@ public class Main extends Application {
             // Тут можна додати повідомлення для користувача або логування
         }
 
-        SceneUtil.setScene(stage, "/com/example/kursova_flowers/app/main-view.fxml", "Cherrish");
+        SceneUtil.setScene(stage, Scenes.MAIN);
     }
 
     @Override
