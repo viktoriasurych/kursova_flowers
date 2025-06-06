@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Pos?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.kursova_flowers.controller.MainController">
+    <left>
+        <StackPane prefWidth="400" style="-fx-background-color: #e0e0e0;">
+            <ImageView fx:id="bgImage" fitWidth="400" preserveRatio="true">
+                <image>
+                    <!-- Встав картинку у resources/images/bg.jpg і в контроллері задай її -->
+                </image>
+            </ImageView>
+            <VBox alignment="CENTER" spacing="10">
+                <Label text="CHERRISH" styleClass="title"/>
+                <Label text="квіти, які леліять" styleClass="subtitle"/>
+                <Label text="-" styleClass="separator"/>
+                <Label text="магазин квітів" styleClass="subtitle"/>
+            </VBox>
+        </StackPane>
+    </left>
+
+    <center>
+        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 60;">
+            <Button text="створити" fx:id="createBtn" styleClass="menu-button"/>
+            <Button text="букети" fx:id="bouquetsBtn" styleClass="menu-button"/>
+            <Button text="квіти" fx:id="flowersBtn" styleClass="menu-button"/>
+            <Button text="вихід" fx:id="exitBtn" styleClass="menu-button"/>
+        </VBox>
+    </center>
+</BorderPane>
