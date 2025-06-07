@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.kursova_flowers.controller.FlowersSectionController"
+      VBox.vgrow="ALWAYS"
+      prefWidth="600" prefHeight="400">
+
+    <!-- ВЕРХНІЙ СЕКТОР: таблиця квітів + загальна ціна -->
+    <VBox spacing="5" VBox.vgrow="ALWAYS">
+        <TableView fx:id="flowersInBouquetTable" VBox.vgrow="ALWAYS"  prefHeight="300">
+            <columns>
+                <TableColumn fx:id="colFlowerType" text="Тип квітки" prefWidth="120"/>
+                <TableColumn fx:id="colFlowerName" text="Назва" prefWidth="120"/>
+                <TableColumn fx:id="colQuantity" text="Кількість" prefWidth="80"/>
+                <TableColumn fx:id="colStemLength" text="Довжина стебла (см)" prefWidth="140"/>
+                <TableColumn fx:id="colPrice" text="Ціна" prefWidth="100"/>
+            </columns>
+        </TableView>
+
+        <Label fx:id="totalPriceLabel" text="Загальна ціна: 0.00 грн" style="-fx-font-weight: bold;"/>
+    </VBox>
+
+    <Separator/>
+
+    <!-- НИЖНІЙ СЕКТОР: форма додавання квітки -->
+    <GridPane hgap="10" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="15"/>
+            <ColumnConstraints percentWidth="20"/>
+            <ColumnConstraints percentWidth="15"/>
+        </columnConstraints>
+
+        <Label text="Тип квітки:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <ComboBox fx:id="flowerTypeComboBox" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+
+        <Label text="Квітка:" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <ComboBox fx:id="flowerComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+        <Label text="Кількість:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+        <Spinner fx:id="quantitySpinner" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+
+        <Label text="Довжина стебла (см):" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+        <TextField fx:id="stemLengthField" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+
+        <HBox spacing="10" GridPane.columnIndex="4" GridPane.rowIndex="1">
+            <Button fx:id="addFlowerButton" text="+"/>
+            <Button fx:id="removeFlowerButton" text="-"/>
+        </HBox>
+    </GridPane>
+
+</VBox>

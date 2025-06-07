@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+
+
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.kursova_flowers.controller.BouquetFormController">
+    <left>
+        <VBox fx:id="leftPanel" spacing="10"  prefWidth="200" alignment="TOP_LEFT">
+            <Button fx:id="backButton" text="← Назад" onAction="#goBack" />
+            <Label text="Назва букету:" />
+            <TextField fx:id="nameField" promptText="Введіть назву..." />
+            <Separator />
+            <Label text="Сторінки:" />
+            <Button fx:id="flowersPageButton" text="1. Квіти" onAction="#showFlowersPage" />
+            <Button fx:id="accessoriesPageButton" text="2. Аксесуари" onAction="#showAccessoriesPage" />
+            <Button fx:id="summaryPageButton" text="3. Чек" onAction="#showSummaryPage" />
+        </VBox>
+    </left>
+
+    <center>
+        <BorderPane fx:id="rightPanel" VBox.vgrow="ALWAYS" />
+    </center>
+</BorderPane>
