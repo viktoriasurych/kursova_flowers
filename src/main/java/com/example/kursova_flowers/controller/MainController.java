@@ -19,7 +19,6 @@ public class MainController {
         createBtn.setOnAction(e -> openScene(Scenes.CREATE));
         bouquetsBtn.setOnAction(e -> openScene(Scenes.BOUQUET));
         flowersBtn.setOnAction(e -> openScene(Scenes.FLOWER));
-        flowersBtn.setOnAction(e -> openScene(Scenes.FLOWER));
         accessorysBtn.setOnAction(e -> openScene(Scenes.ACCESSORY));
         exitBtn.setOnAction(e -> System.exit(0));
 
