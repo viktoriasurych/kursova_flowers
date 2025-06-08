@@ -74,4 +74,22 @@ public class AccessoryTypeDAO {
             }
         }
     }
+
+    public AccessoryType findByName(String name) throws SQLException {
+        String sql = "SELECT id, name, base_price FROM accessory_type WHERE LOWER(name) = LOWER(?) LIMIT 1";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, name);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new AccessoryType(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getDouble("base_price")
+                    );
+                }
+            }
+        }
+        return null; // або кинь виняток, якщо не знайдено
+    }
+
 }

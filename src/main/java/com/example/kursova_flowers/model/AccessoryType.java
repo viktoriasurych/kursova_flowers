@@ -18,6 +18,12 @@ public class AccessoryType {
     public void setName(String name) { this.name = name; }
     public double getBasePrice() { return basePrice; }
     public void setBasePrice(double basePrice) { this.basePrice = basePrice; }
+
+    @Override
+    public String toString() {
+        return name;  // щоб у ComboBox відображалась назва типу
+    }
+
 }
 
 

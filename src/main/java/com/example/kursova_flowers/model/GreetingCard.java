@@ -8,6 +8,11 @@ public class GreetingCard extends Accessory {
         super(id, bouquet, type, color, note);
         this.text = text;
     }
+    public GreetingCard(AccessoryType type, String color, String note, String text) {
+        super(0, null, type, color, note);
+        this.text = text;
+    }
+
     public String getText() { return text; }
     public void setText(String text) { this.text = text; }
 }

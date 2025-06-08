@@ -8,6 +8,10 @@ public class Paper extends Accessory {
         super(id, bouquet, type, color, note);
         this.material = material;
     }
+    public Paper(AccessoryType type, String color, String note, String material) {
+        super(0, null, type, color, note);
+        this.material = material;
+    }
     public String getMaterial() { return material; }
     public void setMaterial(String material) { this.material = material; }
 }

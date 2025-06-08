@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.kursova_flowers.controller.AccessoriesSectionController"
+
+>
+
+    <!-- Таблиці для 4 типів аксесуарів -->
+    <VBox spacing="10" prefHeight="600">
+
+        <Label text="Листівки:"/>
+        <TableView fx:id="cardsTable" prefHeight="150" editable="false">
+            <columns>
+                <TableColumn fx:id="cardTextColumn" text="Текст"/>
+                <TableColumn fx:id="cardColorColumn" text="Колір"/>
+                <TableColumn fx:id="cardPriceColumn" text="Ціна"/>
+                <TableColumn fx:id="cardNoteColumn" text="Інформація"/>
+            </columns>
+        </TableView>
+
+        <Label text="Коробки:"/>
+        <TableView fx:id="boxesTable" prefHeight="150" editable="false">
+            <columns>
+                <TableColumn fx:id="boxTypeColumn" text="Тип"/>
+                <TableColumn fx:id="boxColorColumn" text="Колір"/>
+                <TableColumn fx:id="boxPriceColumn" text="Ціна"/>
+                <TableColumn fx:id="boxNoteColumn" text="Інформація"/>
+            </columns>
+        </TableView>
+
+        <Label text="Стрічки:"/>
+        <TableView fx:id="ribbonsTable" prefHeight="150" editable="false">
+            <columns>
+            <TableColumn fx:id="ribbonWidthColumn" text="Ширина"/>
+            <TableColumn fx:id="ribbonColorColumn" text="Колір"/>
+            <TableColumn fx:id="ribbonPriceColumn" text="Ціна"/>
+            <TableColumn fx:id="ribbonNoteColumn" text="Інформація"/>
+        </columns>
+        </TableView>
+
+        <Label text="Папір:"/>
+        <TableView fx:id="papersTable" prefHeight="150" editable="false">
+            <columns>
+                <TableColumn fx:id="paperMaterialColumn" text="Матеріал"/>
+                <TableColumn fx:id="paperColorColumn" text="Колір"/>
+                <TableColumn fx:id="paperPriceColumn" text="Ціна"/>
+                <TableColumn fx:id="paperNoteColumn" text="Інформація"/>
+            </columns>
+        </TableView>
+
+    </VBox>
+
+    <!-- Форма додавання нового аксесуару -->
+    <GridPane hgap="10" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="30"/>
+            <ColumnConstraints percentWidth="70"/>
+        </columnConstraints>
+
+        <Label text="Тип аксесуару:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <ComboBox fx:id="accessoryTypeComboBox" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+        <Label fx:id="extraFieldLabel" text="Додаткове поле:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+        <TextField fx:id="extraField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+        <Label text="Колір:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+        <TextField fx:id="colorField" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+        <Label text="Додаткова інформація:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+        <TextArea fx:id="extraInfoArea" prefRowCount="3" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+        <HBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="1" alignment="CENTER_LEFT">
+            <Button text="Додати" fx:id="addButton"/>
+            <Button text="Видалити" fx:id="deleteButton"/>
+        </HBox>
+    </GridPane>
+
+</VBox>

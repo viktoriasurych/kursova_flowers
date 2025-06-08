@@ -8,6 +8,10 @@ public class Ribbon extends Accessory {
         super(id, bouquet, type, color, note);
         this.width = width;
     }
+    public Ribbon(AccessoryType type, String color, String note, double width) {
+        super(0, null, type, color, note);
+        this.width = width;
+    }
     public double getWidth() { return width; }
     public void setWidth(double width) { this.width = width; }
 }

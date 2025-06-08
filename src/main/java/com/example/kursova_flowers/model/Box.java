@@ -8,6 +8,10 @@ public class Box extends Accessory {
         super(id, bouquet, type, color, note);
         this.boxType = boxType;
     }
+    public Box(AccessoryType type, String color, String note, String boxType) {
+        super(0, null, type, color, note);
+        this.boxType = boxType;
+    }
     public String getBoxType() { return boxType; }
     public void setBoxType(String boxType) { this.boxType = boxType; }
 }

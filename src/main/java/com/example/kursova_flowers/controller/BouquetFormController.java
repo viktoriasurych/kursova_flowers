@@ -41,7 +41,7 @@ public class BouquetFormController {
     private FlowersSectionController flowersSectionController;
 
     private Node accessoriesSectionNode;
-    //private AccessoriesSectionController accessoriesSectionController;
+    private AccessoriesSectionController accessoriesSectionController;
 
     private Node summarySectionNode;
    // private SummarySectionController summarySectionController;
@@ -74,10 +74,10 @@ public class BouquetFormController {
     }
 
     private void loadAccessoriesPage() throws IOException {
-      //  FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/kursova_flowers/app/accessories_section.fxml"));
-      //  accessoriesSectionNode = loader.load();
-     //   accessoriesSectionController = loader.getController();
-     //   accessoriesSectionController.setConnection(connection);
+       FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/kursova_flowers/app/accessory_section.fxml"));
+        accessoriesSectionNode = loader.load();
+        accessoriesSectionController = loader.getController();
+        accessoriesSectionController.setConnection(connection);
     }
 
     private void loadSummaryPage() throws IOException {
