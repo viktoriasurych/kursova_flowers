@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.kursova_flowers.controller.ReceiptSectionController">
+
+    <VBox spacing="10" >
+
+        <!-- Назва букета -->
+        <HBox spacing="10">
+            <Label text="Назва букета:"/>
+            <Label fx:id="bouquetNameLabel" style="-fx-font-weight: bold;"/>
+        </HBox>
+
+        <!-- Квіти -->
+        <VBox fx:id="flowersSection" spacing="5">
+            <Label text="Список квітів:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+            <TableView fx:id="flowersTable">
+                <columns>
+                    <TableColumn fx:id="flowerTypeColumn" text="Тип квітки"/>
+                    <TableColumn fx:id="flowerNameColumn" text="Квітка"/>
+                    <TableColumn fx:id="flowerStemLengthColumn" text="См стебла"/>
+                    <TableColumn fx:id="flowerQuantityColumn" text="Кількість"/>
+                    <TableColumn fx:id="flowerTotalPriceColumn" text="Загальна ціна"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Листівки -->
+        <VBox fx:id="cardsSection" spacing="5">
+            <Label text="Список листівок:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+            <TableView fx:id="cardsTable" >
+                <columns>
+                    <TableColumn fx:id="cardTextColumn" text="Текст"/>
+                    <TableColumn fx:id="cardColorColumn" text="Колір"/>
+                    <TableColumn fx:id="cardPriceColumn" text="Ціна"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Коробки -->
+        <VBox fx:id="boxesSection" spacing="5">
+            <Label text="Список коробок:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+            <TableView fx:id="boxesTable" >
+                <columns>
+                    <TableColumn fx:id="boxTypeColumn" text="Вигляд"/>
+                    <TableColumn fx:id="boxColorColumn" text="Колір"/>
+                    <TableColumn fx:id="boxPriceColumn" text="Ціна"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Стрічки -->
+        <VBox fx:id="ribbonsSection" spacing="5">
+            <Label text="Список стрічок:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+            <TableView fx:id="ribbonsTable" >
+                <columns>
+                    <TableColumn fx:id="ribbonWidthColumn" text="Ширина"/>
+                    <TableColumn fx:id="ribbonColorColumn" text="Колір"/>
+                    <TableColumn fx:id="ribbonPriceColumn" text="Ціна"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Папір -->
+        <VBox fx:id="papersSection" spacing="5">
+            <Label text="Список паперу:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+            <TableView fx:id="papersTable" >
+                <columns>
+                    <TableColumn fx:id="paperMaterialColumn" text="Матеріал"/>
+                    <TableColumn fx:id="paperColorColumn" text="Колір"/>
+                    <TableColumn fx:id="paperPriceColumn" text="Ціна"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Загальна ціна -->
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <Label text="Загальна ціна:" style="-fx-font-weight: bold;"/>
+            <Label fx:id="totalPriceLabel" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+        </HBox>
+
+        <!-- Кнопки -->
+        <HBox spacing="20" alignment="CENTER_RIGHT">
+            <Button fx:id="saveButton" text="Зберегти"/>
+            <Button fx:id="printButton" text="Роздрукувати"/>
+        </HBox>
+
+    </VBox>
+</AnchorPane>

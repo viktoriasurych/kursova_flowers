@@ -3,6 +3,8 @@ package com.example.kursova_flowers.controller;
 
 import com.example.kursova_flowers.db.DBManager;
 import com.sun.jdi.connect.spi.Connection;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -43,14 +45,15 @@ public class BouquetFormController {
     private Node accessoriesSectionNode;
     private AccessoriesSectionController accessoriesSectionController;
 
-    private Node summarySectionNode;
-   // private SummarySectionController summarySectionController;
+    private Node receiptSectionNode;
+    private ReceiptSectionController receiptSectionController;
 
 
    @FXML
    public void initialize() {
        try {
           connection = DBManager.getConnection();
+
 
            // Попередньо завантажуємо всі сторінки та зберігаємо їх
            loadFlowersPage();
@@ -81,11 +84,18 @@ public class BouquetFormController {
     }
 
     private void loadSummaryPage() throws IOException {
-       // FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/kursova_flowers/app/summary_section.fxml"));
-     //   summarySectionNode = loader.load();
-     //   summarySectionController = loader.getController();
-      //  summarySectionController.setConnection(connection);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/kursova_flowers/app/receipt-section.fxml"));
+        receiptSectionNode = loader.load();
+        receiptSectionController = loader.getController();
+        receiptSectionController.setConnection(connection);
+
+        // Підключаємо контролери секцій
+        receiptSectionController.setControllers(flowersSectionController, accessoriesSectionController, this);
+
+        // Прив'язуємо назву букета до текстового поля
+        receiptSectionController.bindBouquetName(nameField);
     }
+
 
     private void showPage(Node page) {
         rightPanel.setCenter(page);
@@ -103,11 +113,19 @@ public class BouquetFormController {
 
     @FXML
     private void showSummaryPage() {
-        showPage(summarySectionNode);
+
+        showPage(receiptSectionNode);
+        receiptSectionController.refreshData();
+
     }
 
     @FXML
     private void goBack() {
         // TODO: реалізувати повернення на головну
     }
+
+    public String getBouquetName() {
+        return nameField.getText();
+    }
+
 }

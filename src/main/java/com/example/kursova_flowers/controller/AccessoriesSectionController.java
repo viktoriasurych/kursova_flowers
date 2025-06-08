@@ -18,6 +18,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AccessoriesSectionController {
@@ -320,4 +321,14 @@ public class AccessoriesSectionController {
     public ObservableList<Paper> getPapers() {
         return papers;
     }
+
+    public ObservableList<Accessory> getAllAccessories() {
+        ObservableList<Accessory> all = FXCollections.observableArrayList();
+        all.addAll(boxes);
+        all.addAll(ribbons);
+        all.addAll(papers);
+        all.addAll(greetingCards);
+        return all;
+    }
+
 }

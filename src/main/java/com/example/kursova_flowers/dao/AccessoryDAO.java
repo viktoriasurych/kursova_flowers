@@ -33,7 +33,7 @@ public class AccessoryDAO {
     }
 
     public Accessory insert(Accessory accessory) throws SQLException {
-        String sql = "INSERT INTO accessory (bouquet_id, accessory_type_id, color, note) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO accessory (bouquet_id, type_id, color, custom_text) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, accessory.getBouquet().getId());
             ps.setInt(2, accessory.getType().getId());
