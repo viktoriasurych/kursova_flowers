@@ -5,6 +5,7 @@ import com.example.kursova_flowers.dao.FlowerDAO;
 import com.example.kursova_flowers.dao.FlowerTypeDAO;
 import com.example.kursova_flowers.model.*;
 import com.example.kursova_flowers.service.BouquetCalculatorService;
+import com.example.kursova_flowers.service.ReceiptPdfService;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -230,7 +231,23 @@ public class ReceiptSectionController {
 
     private void onPrint() {
         System.out.println("Друк букета: " + bouquetNameLabel.getText());
-        // TODO: Реалізувати друк
+        try {
+            // Отримати букет з форми
+            Bouquet bouquet = bouquetFormController.getCurrentBouquet();
+            if (bouquet == null) {
+                showAlert("Помилка", "Немає букета для друку.");
+                return;
+            }
+
+            String filePath = "receipt_" + bouquet.getName().replaceAll("\\s+", "_") + ".pdf";
+            ReceiptPdfService pdfService = new ReceiptPdfService();
+            pdfService.generatePdfReceipt(bouquet, filePath);
+
+            showAlert("Успіх", "Чек збережено у файлі: " + filePath);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Помилка", "Не вдалося створити PDF.");
+        }
     }
 
 

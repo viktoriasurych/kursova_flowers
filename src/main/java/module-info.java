@@ -6,6 +6,9 @@ module com.example.kursova_flowers {
     requires java.sql;
     requires java.desktop;
     requires jdk.jdi;
+    requires layout;
+    requires kernel;
+    requires io;
 
     // opens com.example.kursova_flowers to javafx.fxml;
     //exports com.example.kursova_flowers;
