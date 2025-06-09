@@ -17,7 +17,12 @@ public class DatabaseConnection {
         }
         String absolutePath = new File(DB_PATH).getAbsolutePath();
         String url = "jdbc:sqlite:" + absolutePath;
-        return DriverManager.getConnection(url);
+        Connection connection = DriverManager.getConnection(url);
+
+        // ✅ Увімкнення зовнішніх ключів
+        connection.createStatement().execute("PRAGMA foreign_keys = ON");
+
+        return connection;
     }
 
 }

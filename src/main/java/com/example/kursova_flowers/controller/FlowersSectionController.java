@@ -149,7 +149,6 @@ public class FlowersSectionController {
         });
 
 
-
     }
 
 
@@ -308,5 +307,13 @@ public class FlowersSectionController {
 
     public ObservableList<FlowerInBouquet> getFlowersInBouquet() {
         return flowersInBouquet;
+    }
+
+    public void setFlowersInBouquet(ObservableList<FlowerInBouquet> flowers) {
+        flowersInBouquet.clear();
+        if (flowers != null) {
+            flowersInBouquet.addAll(flowers);
+        }
+        updateTotalPrice();  // додано
     }
 }

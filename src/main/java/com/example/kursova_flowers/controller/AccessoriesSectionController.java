@@ -321,14 +321,41 @@ public class AccessoriesSectionController {
     public ObservableList<Paper> getPapers() {
         return papers;
     }
+    ObservableList<Accessory> all = FXCollections.observableArrayList();
 
     public ObservableList<Accessory> getAllAccessories() {
-        ObservableList<Accessory> all = FXCollections.observableArrayList();
+all.clear();
         all.addAll(boxes);
         all.addAll(ribbons);
         all.addAll(papers);
         all.addAll(greetingCards);
         return all;
     }
+    public void setAccessories(ObservableList<Accessory> accessories) {
+        greetingCards.clear();
+        boxes.clear();
+        ribbons.clear();
+        papers.clear();
+
+        if (accessories != null) {
+            for (Accessory acc : accessories) {
+                System.out.println(acc.getId());
+                if (acc instanceof GreetingCard) {
+                    greetingCards.add((GreetingCard) acc); System.out.println(acc.getId());
+                } else if (acc instanceof Box) { System.out.println(((Box) acc).getBoxType());
+                    boxes.add((Box) acc);
+                } else if (acc instanceof Ribbon) { System.out.println(acc.getId());
+                    ribbons.add((Ribbon) acc);
+                } else if (acc instanceof Paper) { System.out.println(acc.getId());
+                    papers.add((Paper) acc);
+                }
+            }
+        }
+    }
+
+
+
+
+
 
 }

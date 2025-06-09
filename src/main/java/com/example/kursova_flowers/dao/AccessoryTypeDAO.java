@@ -92,4 +92,5 @@ public class AccessoryTypeDAO {
         return null; // або кинь виняток, якщо не знайдено
     }
 
+
 }

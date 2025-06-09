@@ -15,9 +15,10 @@ public class SceneUtil {
     private static final double HEIGHT = 600;
     private static final String STYLESHEET = "/com/example/kursova_flowers/styles/style.css";
 
-    public static void setScene(Stage stage, Scenes sceneEnum) {
+    public static FXMLLoader setScene(Stage stage, Scenes sceneEnum) {
+        FXMLLoader loader = null;
         try {
-            FXMLLoader loader = new FXMLLoader(SceneUtil.class.getResource(sceneEnum.getFxmlPath()));
+            loader = new FXMLLoader(SceneUtil.class.getResource(sceneEnum.getFxmlPath()));
             Parent root = loader.load();
 
             Scene scene = new Scene(root, WIDTH, HEIGHT);
@@ -30,12 +31,15 @@ public class SceneUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return loader;
     }
+
 
     public static void openSceneFromButton(Button button, Scenes scene) {
         Stage stage = (Stage) button.getScene().getWindow();
         setScene(stage, scene);
     }
+
 
 }
 

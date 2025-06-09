@@ -3,7 +3,7 @@ package com.example.kursova_flowers.util;
 public enum Scenes {
     MAIN("/com/example/kursova_flowers/app/main-view.fxml", "Cherrish"),
     FLOWER("/com/example/kursova_flowers/app/flower-view.fxml", "Квіти"),
-    BOUQUET("/com/example/kursova_flowers/app/b-view.fxml", "Букети"),
+    BOUQUET("/com/example/kursova_flowers/app/bouquets-view.fxml", "Букети"),
     CREATE("/com/example/kursova_flowers/app/bouquetcreate-view.fxml", "Букет"),
     ACCESSORY("/com/example/kursova_flowers/app/accessory-view.fxml", "Аксесуари");
     // інші сцени...

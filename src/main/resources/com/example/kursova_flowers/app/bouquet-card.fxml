@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.kursova_flowers.controller.BouquetCardController"
+      spacing="10" alignment="CENTER" style="-fx-padding: 10; -fx-background-color: #f2f2f2; -fx-border-radius: 10; -fx-background-radius: 10;"
+      prefWidth="150">
+
+    <ImageView fx:id="imageView" fitWidth="120" fitHeight="120" preserveRatio="true"/>
+
+    <Label fx:id="nameLabel" style="-fx-font-weight: bold; -fx-font-size: 14;" wrapText="true"/>
+
+    <Label fx:id="priceLabel" style="-fx-text-fill: #555;"/>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="i" fx:id="infoButton" onAction="#onInfo"/>
+        <Button text="✖" fx:id="deleteButton" onAction="#onDelete"/>
+    </HBox>
+</VBox>

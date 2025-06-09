@@ -2,9 +2,11 @@
 package com.example.kursova_flowers.controller;
 
 import com.example.kursova_flowers.db.DBManager;
+import com.example.kursova_flowers.model.Bouquet;
 import com.sun.jdi.connect.spi.Connection;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -49,7 +51,8 @@ public class BouquetFormController {
     private ReceiptSectionController receiptSectionController;
 
 
-   @FXML
+
+    @FXML
    public void initialize() {
        try {
           connection = DBManager.getConnection();
@@ -67,6 +70,9 @@ public class BouquetFormController {
            e.printStackTrace();
        }
    }
+
+
+
 
     // Методи для перемикання сторінок (покищо пусті — реалізуємо потім)
     private void loadFlowersPage() throws IOException {
@@ -127,5 +133,26 @@ public class BouquetFormController {
     public String getBouquetName() {
         return nameField.getText();
     }
+
+    private Bouquet currentBouquet; // збережений букет для редагування
+    public Bouquet getCurrentBouquet() {
+        return currentBouquet;
+    }
+    public void setBouquet(Bouquet bouquet) {
+        this.currentBouquet = bouquet;
+        if (bouquet != null) {
+            nameField.setText(bouquet.getName());
+
+            // Передати список квітів і аксесуарів у відповідні контролери
+            flowersSectionController.setFlowersInBouquet(FXCollections.observableArrayList(bouquet.getFlowers()));
+            accessoriesSectionController.setAccessories(FXCollections.observableArrayList(bouquet.getAccessories()));
+
+            // Можливо, оновити сумарні дані у ReceiptSectionController, якщо він вже ініціалізований
+            if (receiptSectionController != null) {
+                receiptSectionController.refreshData();
+            }
+        }
+    }
+
 
 }

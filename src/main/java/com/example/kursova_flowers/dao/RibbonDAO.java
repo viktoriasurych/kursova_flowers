@@ -14,7 +14,7 @@ public class RibbonDAO {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 accessory_id INTEGER UNIQUE NOT NULL,
                 width REAL,
-                FOREIGN KEY (accessory_id) REFERENCES accessory(id)
+                FOREIGN KEY (accessory_id) REFERENCES accessory(id) ON DELETE CASCADE
             )
         """;
         try (Statement stmt = connection.createStatement()) {

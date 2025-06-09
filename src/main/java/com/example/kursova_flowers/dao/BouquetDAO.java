@@ -40,7 +40,7 @@ public class BouquetDAO {
     }
 
     public List<Bouquet> findAll() throws SQLException {
-        List<Bouquet> bouquets = new ArrayList<>();
+        /* List<Bouquet> bouquets = new ArrayList<>();
         String sql = "SELECT * FROM bouquet";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -51,17 +51,44 @@ public class BouquetDAO {
                 bouquets.add(b);
             }
         }
-        return bouquets;
+        return bouquets;*/
+
+            List<Bouquet> bouquets = new ArrayList<>();
+            String sql = "SELECT * FROM bouquet";
+
+            try (PreparedStatement stmt = connection.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+
+                while (rs.next()) {
+                    Bouquet bouquet = new Bouquet();
+                    bouquet.setId(rs.getInt("id"));
+                    bouquet.setName(rs.getString("name"));
+
+                    // завантажити квіти та аксесуари
+                    FlowerInBouquetDAO flowerDAO = new FlowerInBouquetDAO(connection);
+                    bouquet.setFlowers(flowerDAO.findByBouquetId(bouquet.getId()));
+
+                    AccessoryDAO accessoryDAO = new AccessoryDAO(connection);
+                    bouquet.setAccessories(accessoryDAO.findByBouquetId(bouquet.getId()));
+
+                    bouquets.add(bouquet);
+                }
+            }
+
+            return bouquets;
+
+
     }
 
     public void update(Bouquet bouquet) throws SQLException {
         String sql = "UPDATE bouquet SET name = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, bouquet.getName());
-            ps.setInt(2, bouquet.getId());
-            ps.executeUpdate();
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, bouquet.getName());
+            stmt.setInt(2, bouquet.getId());
+            stmt.executeUpdate();
         }
     }
+
 
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM bouquet WHERE id = ?";

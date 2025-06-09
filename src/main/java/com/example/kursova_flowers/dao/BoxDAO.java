@@ -16,7 +16,7 @@ public class BoxDAO {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 accessory_id INTEGER UNIQUE NOT NULL,
                 style TEXT,
-                FOREIGN KEY (accessory_id) REFERENCES accessory(id)
+                FOREIGN KEY (accessory_id) REFERENCES accessory(id) ON DELETE CASCADE
             )
         """;
         try (Statement stmt = connection.createStatement()) {

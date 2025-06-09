@@ -3,6 +3,7 @@ package com.example.kursova_flowers.dao;
 import com.example.kursova_flowers.model.FlowerInBouquet;
 import com.example.kursova_flowers.model.Flower;
 import com.example.kursova_flowers.model.Bouquet;
+import com.example.kursova_flowers.model.FlowerType;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class FlowerInBouquetDAO {
                 stem_length REAL,
                 quantity INTEGER,
                 FOREIGN KEY(flower_id) REFERENCES flower(id),
-                FOREIGN KEY(bouquet_id) REFERENCES bouquet(id)
+                FOREIGN KEY(bouquet_id) REFERENCES bouquet(id) ON DELETE CASCADE
             )
         """;
         try (Statement stmt = connection.createStatement()) {
@@ -52,12 +53,15 @@ public class FlowerInBouquetDAO {
     public List<FlowerInBouquet> findByBouquetId(int bouquetId) throws SQLException {
         List<FlowerInBouquet> list = new ArrayList<>();
         String sql = """
-            SELECT fib.id, fib.stem_length, fib.quantity,
-                   f.id as flower_id, f.name as flower_name, f.price as flower_price
-            FROM flower_in_bouquet fib
-            JOIN flower f ON fib.flower_id = f.id
-            WHERE fib.bouquet_id = ?
-        """;
+    SELECT fib.id, fib.stem_length, fib.quantity,
+           f.id as flower_id, f.name as flower_name, f.price as flower_price,
+           ft.id as type_id, ft.name as type_name
+    FROM flower_in_bouquet fib
+    JOIN flower f ON fib.flower_id = f.id
+    JOIN flower_type ft ON f.type_id = ft.id
+    WHERE fib.bouquet_id = ?
+""";
+
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, bouquetId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -69,6 +73,13 @@ public class FlowerInBouquetDAO {
                     flower.setId(rs.getInt("flower_id"));
                     flower.setName(rs.getString("flower_name"));
                     flower.setPrice(rs.getDouble("flower_price"));
+
+                    // Створюємо і встановлюємо тип квітки
+                    FlowerType type = new FlowerType();
+                    type.setId(rs.getInt("type_id"));
+                    type.setName(rs.getString("type_name"));
+                    flower.setType(type);
+
                     fib.setFlower(flower);
 
                     Bouquet bouquet = new Bouquet();
@@ -77,11 +88,20 @@ public class FlowerInBouquetDAO {
 
                     fib.setStemLength(rs.getDouble("stem_length"));
                     fib.setQuantity(rs.getInt("quantity"));
+
                     list.add(fib);
                 }
             }
         }
+
         return list;
+    }
+    public void deleteByBouquetId(int bouquetId) throws SQLException {
+        String sql = "DELETE FROM flower_in_bouquet WHERE bouquet_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, bouquetId);
+            stmt.executeUpdate();
+        }
     }
 
     // add update, delete as needed

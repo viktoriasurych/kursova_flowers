@@ -151,6 +151,7 @@ public class ReceiptSectionController {
         this.accessoriesController = accessoriesController;
         this.bouquetFormController = bouquetFormController;
 
+
         updateDataFromControllers();
     }
     private void bindTableHeight(TableView<?> table) {
@@ -205,6 +206,7 @@ public class ReceiptSectionController {
         bouquet.setFlowers(flowersController.getFlowersInBouquet());
         bouquet.setAccessories(accessoriesController.getAllAccessories());
 
+        System.out.println();
         double total = calculatorService.calculateTotalPrice(bouquet);
 
 
@@ -216,7 +218,7 @@ public class ReceiptSectionController {
     }
 
 
-    private void onSave() {
+    /*   private void onSave() {
         System.out.println("Збереження букета: " + bouquetNameLabel.getText());
         try {
             // 1. Відкрити транзакцію
@@ -235,6 +237,7 @@ public class ReceiptSectionController {
             Bouquet bouquet = new Bouquet();
             bouquet.setName(name);
             bouquetDAO.insert(bouquet);
+
 
             // 3. Вставити квіти з bouquet
             ObservableList<FlowerInBouquet> flowers = flowersController.getFlowersInBouquet();
@@ -279,7 +282,7 @@ public class ReceiptSectionController {
             }
         }
     }
-
+*/
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -293,4 +296,77 @@ public class ReceiptSectionController {
         System.out.println("Друк букета: " + bouquetNameLabel.getText());
         // TODO: Реалізувати друк
     }
+
+
+    private void onSave() {
+        System.out.println("Збереження букета: " + bouquetNameLabel.getText());
+        try {
+            connection.setAutoCommit(false);
+
+            BouquetDAO bouquetDAO = new BouquetDAO(connection);
+            FlowerInBouquetDAO fibDAO = new FlowerInBouquetDAO(connection);
+            AccessoryDAO accessoryDAO = new AccessoryDAO(connection);
+
+            String name = bouquetFormController.getBouquetName();
+            if (name == null || name.isBlank()) {
+                showAlert("Помилка", "Назва букета не може бути порожньою.");
+                return;
+            }
+
+            Bouquet bouquet = bouquetFormController.getCurrentBouquet();
+            if (bouquet == null) {
+                bouquet = new Bouquet();
+                bouquet.setName(name);
+                bouquetDAO.insert(bouquet);
+            } else {
+                bouquet.setName(name);
+                bouquetDAO.update(bouquet); // потрібно реалізувати метод оновлення в DAO
+                // Можливо, також видалити старі записи про квіти і аксесуари, щоб замінити на нові
+                fibDAO.deleteByBouquetId(bouquet.getId());
+                accessoryDAO.deleteByBouquetId(bouquet.getId());
+            }
+
+            // 3. Вставити квіти з bouquet
+            ObservableList<FlowerInBouquet> flowers = flowersController.getFlowersInBouquet();
+            for (FlowerInBouquet fib : flowers) {
+                fib.setBouquet(bouquet);  // зв'язати квітку з букетом
+                fibDAO.insert(fib);
+            }
+
+            // 4. Вставити аксесуари
+            ObservableList<Accessory> accessories = accessoriesController.getAllAccessories();
+            for (Accessory acc : accessories) {
+                acc.setBouquet(bouquet); // зв'язати аксесуар з букетом
+                accessoryDAO.insert(acc);
+                // Якщо аксесуар - Box, Ribbon, Paper, GreetingCard, треба додати відповідні підкласи
+                if (acc instanceof Box) {
+                    BoxDAO boxDAO = new BoxDAO(connection);
+                    boxDAO.insert((Box) acc);
+                    // Додайте insert для Box, якщо реалізовано
+                }
+                // Аналогічно для Ribbon, Paper, GreetingCard
+            }
+
+            connection.commit();
+            showAlert("Успіх", "Букет успішно збережено!");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            showAlert("Помилка", "Не вдалося зберегти букет.");
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
 }
