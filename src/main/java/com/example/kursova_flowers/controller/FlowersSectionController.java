@@ -5,6 +5,8 @@ import com.example.kursova_flowers.dao.FlowerTypeDAO;
 import com.example.kursova_flowers.model.Flower;
 import com.example.kursova_flowers.model.FlowerInBouquet;
 import com.example.kursova_flowers.model.FlowerType;
+import com.example.kursova_flowers.service.FlowersFiltrService;
+import com.example.kursova_flowers.service.FlowersSortService;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -16,6 +18,7 @@ import javafx.scene.control.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +35,9 @@ public class FlowersSectionController {
 
     @FXML
     private TableColumn<FlowerInBouquet, Integer> colQuantity;
+    @FXML
+    private TableColumn<FlowerInBouquet, String> colFreshness;
+
 
     @FXML
     private TableColumn<FlowerInBouquet, Double> colStemLength;
@@ -59,11 +65,25 @@ public class FlowersSectionController {
 
     @FXML
     private Button removeFlowerButton;
+    @FXML
+    private Button sortByFreshnessButton;
 
     private ObservableList<FlowerInBouquet> flowersInBouquet = FXCollections.observableArrayList();
 
     private FlowerTypeDAO flowerTypeDAO;
     private FlowerDAO flowerDAO;
+
+    @FXML
+    private TextField minLengthField;
+
+    @FXML
+    private TextField maxLengthField;
+
+    @FXML
+    private Button findByLengthButton;
+
+    @FXML
+    private Button resetFilterButton;
 
     private Connection connection;
 
@@ -91,6 +111,13 @@ public class FlowersSectionController {
         colPrice.setCellValueFactory(cellData -> new SimpleDoubleProperty(
                 cellData.getValue().getQuantity() * cellData.getValue().getFlower().getPrice()
         ).asObject());
+
+        colFreshness.setCellValueFactory(cellData -> {
+            LocalDate date = cellData.getValue().getFlower().getPickedDate();
+            String value = (date != null) ? date.toString() : "";
+            return new SimpleStringProperty(value);
+        });
+        sortByFreshnessButton.setOnAction(e -> onSortByFreshness());
 
         flowersInBouquetTable.setItems(flowersInBouquet);
 
@@ -148,7 +175,17 @@ public class FlowersSectionController {
             }
         });
 
+        // Запам'ятовуємо оригінальний список (завантажений із БД, поки що пустий)
+        originalFlowersList = FXCollections.observableArrayList();
 
+        // Обробники кнопок пошуку і скидання
+        findByLengthButton.setOnAction(e -> onFindByLength());
+        resetFilterButton.setOnAction(e -> onResetFilter());
+    }
+    // Збережемо початковий список квітів для скидання фільтрації
+    private List<FlowerInBouquet> originalFlowersList;
+    private void onSortByFreshness() {
+        FlowersSortService.sortByFreshness(flowersInBouquet);
     }
 
 
@@ -166,7 +203,39 @@ public class FlowersSectionController {
             showError("Помилка при завантаженні типів квітів: " + e.getMessage());
         }
     }
+    // Метод для пошуку по довжині стебла
+    private void onFindByLength() {
+        Double minLength = parseDoubleOrNull(minLengthField.getText());
+        Double maxLength = parseDoubleOrNull(maxLengthField.getText());
 
+        if (minLength != null && maxLength != null && minLength > maxLength) {
+            showError("Мінімальна довжина не може бути більшою за максимальну.");
+            return;
+        }
+
+        List<FlowerInBouquet> filtered = filtrService.filterByStemLengthRange(originalFlowersList, minLength, maxLength);
+
+        flowersInBouquet.setAll(filtered);
+    }
+    private FlowersFiltrService filtrService = new FlowersFiltrService();
+    // Метод для скидання фільтра
+    private void onResetFilter() {
+        minLengthField.clear();
+        maxLengthField.clear();
+        flowersInBouquet.setAll(originalFlowersList);
+    }
+
+    // Допоміжний метод для парсингу Double з тексту, повертає null якщо не валідно
+    private Double parseDoubleOrNull(String text) {
+        if (text == null || text.isBlank()) {
+            return null;
+        }
+        try {
+            return Double.parseDouble(text);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
     private void onFlowerTypeSelected() {
         FlowerType selectedType = flowerTypeComboBox.getSelectionModel().getSelectedItem();
         if (selectedType == null) {
@@ -278,7 +347,7 @@ public class FlowersSectionController {
         }
 
         updateTotalPrice();
-
+        updateOriginalListSnapshot();
     }
 
 
@@ -315,5 +384,10 @@ public class FlowersSectionController {
             flowersInBouquet.addAll(flowers);
         }
         updateTotalPrice();  // додано
+        updateOriginalListSnapshot();
+    }
+
+    private void updateOriginalListSnapshot() {
+        originalFlowersList = FXCollections.observableArrayList(flowersInBouquet);
     }
 }

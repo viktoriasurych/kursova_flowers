@@ -9,6 +9,21 @@
       VBox.vgrow="ALWAYS"
       prefWidth="600" prefHeight="400">
 
+
+    <HBox alignment="TOP_RIGHT" spacing="10">
+        <Button fx:id="sortByFreshnessButton" text="Сортувати за свіжістю"/>
+
+        <Label text="Довжина стебла від:"/>
+        <TextField fx:id="minLengthField" promptText="мін." maxWidth="60"/>
+
+        <Label text="до:"/>
+        <TextField fx:id="maxLengthField" promptText="макс." maxWidth="60"/>
+
+        <Button fx:id="findByLengthButton" text="Знайти"/>
+        <Button fx:id="resetFilterButton" text="Скинути"/>
+    </HBox>
+
+
     <!-- ВЕРХНІЙ СЕКТОР: таблиця квітів + загальна ціна -->
     <VBox spacing="5" VBox.vgrow="ALWAYS">
         <TableView fx:id="flowersInBouquetTable" VBox.vgrow="ALWAYS"  prefHeight="300">
@@ -17,6 +32,7 @@
                 <TableColumn fx:id="colFlowerName" text="Назва" prefWidth="120"/>
                 <TableColumn fx:id="colQuantity" text="Кількість" prefWidth="80"/>
                 <TableColumn fx:id="colStemLength" text="Довжина стебла (см)" prefWidth="140"/>
+                <TableColumn fx:id="colFreshness" text="Свіжість" prefWidth="120"/>
                 <TableColumn fx:id="colPrice" text="Ціна" prefWidth="100"/>
             </columns>
         </TableView>

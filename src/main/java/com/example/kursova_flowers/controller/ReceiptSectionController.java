@@ -218,71 +218,7 @@ public class ReceiptSectionController {
     }
 
 
-    /*   private void onSave() {
-        System.out.println("Збереження букета: " + bouquetNameLabel.getText());
-        try {
-            // 1. Відкрити транзакцію
-            connection.setAutoCommit(false);
 
-            BouquetDAO bouquetDAO = new BouquetDAO(connection);
-            FlowerInBouquetDAO fibDAO = new FlowerInBouquetDAO(connection);
-            AccessoryDAO accessoryDAO = new AccessoryDAO(connection);
-
-            // 2. Вставити букет у базу і отримати id
-            String name = bouquetFormController.getBouquetName();
-            if (name == null || name.isBlank()) {
-                showAlert("Помилка", "Назва букета не може бути порожньою.");
-                return;
-            }
-            Bouquet bouquet = new Bouquet();
-            bouquet.setName(name);
-            bouquetDAO.insert(bouquet);
-
-
-            // 3. Вставити квіти з bouquet
-            ObservableList<FlowerInBouquet> flowers = flowersController.getFlowersInBouquet();
-            for (FlowerInBouquet fib : flowers) {
-                fib.setBouquet(bouquet);  // зв'язати квітку з букетом
-                fibDAO.insert(fib);
-            }
-
-            // 4. Вставити аксесуари
-            ObservableList<Accessory> accessories = accessoriesController.getAllAccessories();
-            for (Accessory acc : accessories) {
-                acc.setBouquet(bouquet); // зв'язати аксесуар з букетом
-                accessoryDAO.insert(acc);
-                // Якщо аксесуар - Box, Ribbon, Paper, GreetingCard, треба додати відповідні підкласи
-                if (acc instanceof Box) {
-                    BoxDAO boxDAO = new BoxDAO(connection);
-                    boxDAO.insert((Box) acc);
-                    // Додайте insert для Box, якщо реалізовано
-                }
-                // Аналогічно для Ribbon, Paper, GreetingCard
-            }
-
-            // 5. Коміт транзакції
-            connection.commit();
-
-            showAlert("Успіх", "Букет успішно збережено у базу.");
-
-        } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-            showAlert("Помилка", "Не вдалося зберегти букет: " + e.getMessage());
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        } finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-*/
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);

@@ -6,6 +6,7 @@ import com.example.kursova_flowers.model.Bouquet;
 import com.example.kursova_flowers.model.FlowerType;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,8 +55,9 @@ public class FlowerInBouquetDAO {
         List<FlowerInBouquet> list = new ArrayList<>();
         String sql = """
     SELECT fib.id, fib.stem_length, fib.quantity,
-           f.id as flower_id, f.name as flower_name, f.price as flower_price,
-           ft.id as type_id, ft.name as type_name
+                           f.id as flower_id, f.name as flower_name, f.price as flower_price, f.picked_date,
+                           ft.id as type_id, ft.name as type_name
+                
     FROM flower_in_bouquet fib
     JOIN flower f ON fib.flower_id = f.id
     JOIN flower_type ft ON f.type_id = ft.id
@@ -73,6 +75,10 @@ public class FlowerInBouquetDAO {
                     flower.setId(rs.getInt("flower_id"));
                     flower.setName(rs.getString("flower_name"));
                     flower.setPrice(rs.getDouble("flower_price"));
+                    String dateStr = rs.getString("picked_date");
+                    if (dateStr != null) {
+                        flower.setPickedDate(LocalDate.parse(dateStr));
+                    }
 
                     // Створюємо і встановлюємо тип квітки
                     FlowerType type = new FlowerType();
