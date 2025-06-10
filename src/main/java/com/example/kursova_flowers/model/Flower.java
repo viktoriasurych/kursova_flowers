@@ -9,16 +9,14 @@ public class Flower {
     private FlowerType type;
     private double price;
     private LocalDate pickedDate;
-    private int totalQuantity;
 
     public Flower() {}
-    public Flower(int id, String name, FlowerType type, double price, LocalDate pickedDate, int totalQuantity) {
+    public Flower(int id, String name, FlowerType type, double price, LocalDate pickedDate) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.price = price;
         this.pickedDate = pickedDate;
-        this.totalQuantity = totalQuantity;
     }
 
     public int getId() { return id; }
@@ -31,13 +29,11 @@ public class Flower {
     public void setPrice(double price) { this.price = price; }
     public LocalDate getPickedDate() { return pickedDate; }
     public void setPickedDate(LocalDate pickedDate) { this.pickedDate = pickedDate; }
-    public int getTotalQuantity() { return totalQuantity; }
-    public void setTotalQuantity(int totalQuantity) { this.totalQuantity = totalQuantity; }
 
 
     @Override
     public String toString() {
-        return this.name;  // або інше поле, яке має відображатись
+        return this.name;
     }
 
 }

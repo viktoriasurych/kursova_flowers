@@ -3,6 +3,8 @@ package com.example.kursova_flowers.controller;
 
 import com.example.kursova_flowers.db.DBManager;
 import com.example.kursova_flowers.model.Bouquet;
+import com.example.kursova_flowers.util.SceneUtil;
+import com.example.kursova_flowers.util.Scenes;
 import com.sun.jdi.connect.spi.Connection;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -20,21 +22,10 @@ public class BouquetFormController {
 
     @FXML
     private VBox leftPanel;
-
     @FXML
     private Button backButton;
-
     @FXML
     private TextField nameField;
-
-    @FXML
-    private Button flowersPageButton;
-
-    @FXML
-    private Button accessoriesPageButton;
-
-    @FXML
-    private Button summaryPageButton;
 
     @FXML
     private BorderPane rightPanel;
@@ -51,12 +42,10 @@ public class BouquetFormController {
     private ReceiptSectionController receiptSectionController;
 
 
-
     @FXML
    public void initialize() {
        try {
           connection = DBManager.getConnection();
-
 
            // Попередньо завантажуємо всі сторінки та зберігаємо їх
            loadFlowersPage();
@@ -71,37 +60,34 @@ public class BouquetFormController {
        }
    }
 
-
-
-
-    // Методи для перемикання сторінок (покищо пусті — реалізуємо потім)
+    // Методи для перемикання сторінок
     private void loadFlowersPage() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/kursova_flowers/app/flowers_section.fxml"));
-        flowersSectionNode = loader.load();
-        flowersSectionController = loader.getController();
-        flowersSectionController.setConnection(connection);
+        flowersSectionController = SceneUtil.loadSection(
+                Scenes.SECTIONFLOWER.getFxmlPath(),
+                controller -> controller.setConnection(connection),
+                node -> flowersSectionNode = node
+        );
     }
 
     private void loadAccessoriesPage() throws IOException {
-       FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/kursova_flowers/app/accessory_section.fxml"));
-        accessoriesSectionNode = loader.load();
-        accessoriesSectionController = loader.getController();
-        accessoriesSectionController.setConnection(connection);
+        accessoriesSectionController = SceneUtil.loadSection(
+                Scenes.SECTIONACCESSORY.getFxmlPath(),
+                controller -> controller.setConnection(connection),
+                node -> accessoriesSectionNode = node
+        );
     }
 
     private void loadSummaryPage() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/kursova_flowers/app/receipt-section.fxml"));
-        receiptSectionNode = loader.load();
-        receiptSectionController = loader.getController();
-        receiptSectionController.setConnection(connection);
-
-        // Підключаємо контролери секцій
-        receiptSectionController.setControllers(flowersSectionController, accessoriesSectionController, this);
-
-        // Прив'язуємо назву букета до текстового поля
-        receiptSectionController.bindBouquetName(nameField);
+        receiptSectionController = SceneUtil.loadSection(
+                Scenes.SECTIONRECEIPT.getFxmlPath(),
+                controller -> {
+                    controller.setConnection(connection);
+                    controller.setControllers(flowersSectionController, accessoriesSectionController, this);
+                    controller.bindBouquetName(nameField);
+                    },
+                node -> receiptSectionNode = node
+        );
     }
-
 
     private void showPage(Node page) {
         rightPanel.setCenter(page);
@@ -127,7 +113,7 @@ public class BouquetFormController {
 
     @FXML
     private void goBack() {
-        // TODO: реалізувати повернення на головну
+        SceneUtil.openSceneFromButton(backButton, Scenes.MAIN);
     }
 
     public String getBouquetName() {
@@ -153,6 +139,5 @@ public class BouquetFormController {
             }
         }
     }
-
 
 }

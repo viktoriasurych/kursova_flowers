@@ -5,6 +5,8 @@ import com.example.kursova_flowers.db.DBManager;
 import com.example.kursova_flowers.model.AccessoryType;
 import com.example.kursova_flowers.util.SceneUtil;
 import com.example.kursova_flowers.util.Scenes;
+import com.example.kursova_flowers.util.ShowErrorUtil;
+import com.example.kursova_flowers.util.TableColumnUtil;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -14,7 +16,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.DoubleStringConverter;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -37,6 +38,7 @@ public class AccessoryTypeController {
 
     @FXML
     private Button backToMainButton;
+
     @FXML
     private void handleOpenScene(ActionEvent event) {
         SceneUtil.openSceneFromButton(backToMainButton, Scenes.MAIN);
@@ -50,7 +52,8 @@ public class AccessoryTypeController {
             accessoryDAO.insertDefaultAccessoriesIfEmpty();
             loadAccessories();
         } catch (SQLException e) {
-            showError("Помилка ініціалізації DAO", e.getMessage());
+            ShowErrorUtil.showError("Помилка ініціалізації DAO", e.getMessage());
+
         }
 
         setupTable();
@@ -61,7 +64,7 @@ public class AccessoryTypeController {
             accessories.clear();
             accessories.addAll(accessoryDAO.findAll());
         } catch (SQLException e) {
-            showError("Помилка завантаження аксесуарів", e.getMessage());
+            ShowErrorUtil.showError("Помилка завантаження аксесуарів", e.getMessage());
         }
     }
 
@@ -70,47 +73,24 @@ public class AccessoryTypeController {
         accessoryTable.setEditable(true);
 
         // Назва — тільки для читання
-        nameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getName()));
-        nameColumn.setEditable(false);
+        TableColumnUtil.makeReadOnlyStringColumn(nameColumn, AccessoryType::getName);
 
-        // Ціна — редагована
-        priceColumn.setCellValueFactory(data -> new SimpleDoubleProperty(data.getValue().getBasePrice()).asObject());
-        priceColumn.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
-        priceColumn.setOnEditCommit(event -> {
-            AccessoryType accessoryType = event.getRowValue();
-            accessoryType.setBasePrice(event.getNewValue());
-            accessoryTable.refresh();
-        });
+        // Ціна — редагована колонка
+        TableColumnUtil.makeEditableDoubleColumn(priceColumn,
+                AccessoryType::getBasePrice,
+                AccessoryType::setBasePrice);
 
         // Кнопка збереження
-        saveColumn.setCellFactory(col -> new TableCell<>() {
-            private final Button btn = new Button("✔");
-            {
-                btn.setOnAction(e -> {
-                    AccessoryType accessoryType = getTableView().getItems().get(getIndex());
-                    try {
-                        accessoryDAO.updateBasePrice(accessoryType.getId(), accessoryType.getBasePrice());
-                        loadAccessories();
-                    } catch (SQLException ex) {
-                        showError("Помилка збереження", ex.getMessage());
-                    }
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : btn);
+        TableColumnUtil.makeSaveButtonColumn(saveColumn, (accessoryType, index) -> {
+            try {
+                accessoryDAO.updateBasePrice(accessoryType.getId(), accessoryType.getBasePrice());
+                loadAccessories();
+            } catch (SQLException ex) {
+                ShowErrorUtil.showError("Помилка збереження", ex.getMessage());
             }
         });
     }
 
-    private void showError(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+
 }
 

@@ -50,42 +50,6 @@ public class AccessoryDAO {
         return accessory;
     }
 
-   /* public List<Accessory> findByBouquetId(int bouquetId) throws SQLException {
-        List<Accessory> list = new ArrayList<>();
-        String sql = """
-            SELECT a.id, a.color, a.note,
-                   at.id as accessory_type_id, at.name as accessory_type_name, at.base_price as accessory_type_price
-            FROM accessory a
-            JOIN accessory_type at ON a.accessory_type_id = at.id
-            WHERE a.bouquet_id = ?
-        """;
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, bouquetId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Accessory accessory = new Accessory();
-                    accessory.setId(rs.getInt("id"));
-
-                    AccessoryType type = new AccessoryType();
-                    type.setId(rs.getInt("accessory_type_id"));
-                    type.setName(rs.getString("accessory_type_name"));
-                    type.setBasePrice(rs.getDouble("accessory_type_price"));
-                    accessory.setType(type);
-
-                    Bouquet bouquet = new Bouquet();
-                    bouquet.setId(bouquetId);
-                    accessory.setBouquet(bouquet);
-
-                    accessory.setColor(rs.getString("color"));
-                    accessory.setNote(rs.getString("note"));
-
-                    list.add(accessory);
-                }
-            }
-        }
-        return list;
-    }*/
-
     public List<Accessory> findByBouquetId(int bouquetId) throws SQLException {
         List<Accessory> list = new ArrayList<>();
         String sql = """

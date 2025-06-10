@@ -33,16 +33,6 @@ public class FlowerTypeDAO {
         }
     }
 
-    // Оновлення назви квітки за id
-    public void update(FlowerType type) throws SQLException {
-        String sql = "UPDATE flower_type SET name = ? WHERE id = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, type.getName());
-            pstmt.setInt(2, type.getId());
-            pstmt.executeUpdate();
-        }
-    }
-
     // Видалення квітки за id
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM flower_type WHERE id = ?";

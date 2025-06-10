@@ -40,21 +40,9 @@ public class BouquetDAO {
     }
 
     public List<Bouquet> findAll() throws SQLException {
-        /* List<Bouquet> bouquets = new ArrayList<>();
-        String sql = "SELECT * FROM bouquet";
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                Bouquet b = new Bouquet();
-                b.setId(rs.getInt("id"));
-                b.setName(rs.getString("name"));
-                bouquets.add(b);
-            }
-        }
-        return bouquets;*/
 
             List<Bouquet> bouquets = new ArrayList<>();
-            String sql = "SELECT * FROM bouquet";
+            String sql = "SELECT * FROM bouquet  ORDER BY id DESC";
 
             try (PreparedStatement stmt = connection.prepareStatement(sql);
                  ResultSet rs = stmt.executeQuery()) {

@@ -11,7 +11,7 @@ public class AccessoryType {
         this.name = name;
         this.basePrice = basePrice;
     }
-    // Геттери і сеттери...
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public String getName() { return name; }

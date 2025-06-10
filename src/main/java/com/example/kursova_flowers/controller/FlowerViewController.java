@@ -7,24 +7,18 @@ import com.example.kursova_flowers.model.Flower;
 import com.example.kursova_flowers.model.FlowerType;
 import com.example.kursova_flowers.util.SceneUtil;
 import com.example.kursova_flowers.util.Scenes;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
+import com.example.kursova_flowers.util.ShowErrorUtil;
+import com.example.kursova_flowers.util.TableColumnUtil;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.Pane;
-import javafx.util.converter.DoubleStringConverter;
-import javafx.util.converter.IntegerStringConverter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Optional;
 
 public class FlowerViewController {
 
@@ -34,21 +28,24 @@ public class FlowerViewController {
     @FXML
     private Button addButton;
 
-    @FXML
-    private Pane detailPane;
     @FXML private Label selectedTypeLabel;
     @FXML private Label flowerCountLabel;
-    @FXML private Button addFlowerButton;
     @FXML private TableView<Flower> flowerTable;
     @FXML private TableColumn<Flower, String> nameColumn;
     @FXML private TableColumn<Flower, Double> priceColumn;
-    @FXML private TableColumn<Flower, Integer> quantityColumn;
     @FXML private TableColumn<Flower, LocalDate> dateColumn;
-    @FXML private TableColumn<Flower, Void> saveColumn;
-    @FXML private TableColumn<Flower, Void> deleteColumn;
+
+    @FXML private TextField newTypeField;
+
+    @FXML private TextField nameField;
+    @FXML private TextField priceField;
+    @FXML private DatePicker datePicker;
+    @FXML private Button updateButton;
+    @FXML private Button deleteButton;
 
     @FXML
     private Button backToMainButton;
+
     @FXML
     private void handleOpenScene(ActionEvent event) {
         SceneUtil.openSceneFromButton(backToMainButton, Scenes.MAIN);
@@ -63,15 +60,26 @@ public class FlowerViewController {
 
 
     public void initialize() {
+        initializeDAOs();
+        initializeFlowerTypeList();
+        initializeEventHandlers();
+        setupEditableColumns();
+        flowerTable.setItems(flowers);
+
+    }
+
+    private void initializeDAOs() {
         try {
             Connection connection = DBManager.getConnection(); // Отримуємо єдине підключення
             flowerTypeDAO = new FlowerTypeDAO(connection);
             flowerDAO = new FlowerDAO(connection);
             loadFlowerTypes();
         } catch (Exception e) {
-            showError("Помилка ініціалізації DAO", e.getMessage());
+            ShowErrorUtil.showError("Помилка ініціалізації DAO", e.getMessage());
         }
+    }
 
+    private void initializeFlowerTypeList() {
         flowerTypeList.setItems(flowerTypes);
         flowerTypeList.setCellFactory(param -> new ListCell<>() {
             @Override
@@ -80,7 +88,9 @@ public class FlowerViewController {
                 setText(empty || item == null ? null : item.getName());
             }
         });
+    }
 
+    private void initializeEventHandlers() {
         addButton.setOnAction(e -> onAddFlowerType());
 
         flowerTypeList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
@@ -91,58 +101,129 @@ public class FlowerViewController {
             }
         });
 
-        addFlowerButton.setOnAction(e -> onAddNewFlowerRow());
+        flowerTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                fillForm(newSelection);
+            } else {
+                clearForm();
+            }
+        });
 
-        setupEditableColumns();
-        setupActionColumns(); // для ✔ і ✖
-        flowerTable.setItems(flowers);
+        updateButton.setOnAction(e -> onUpdateButtonClicked());
+        deleteButton.setOnAction(e -> onDeleteButtonClicked());
+    }
 
+    private void onUpdateButtonClicked() {
+        Flower selected = flowerTable.getSelectionModel().getSelectedItem();
 
+        if (selected != null) {
+            updateExistingFlower(selected);
+        } else {
+            addNewFlower();
+        }
+
+        clearForm();
+    }
+
+    private void updateExistingFlower(Flower selected) {
+        updateFlowerFromForm(selected);
+        try {
+            if (selected.getId() == 0) {
+                flowerDAO.insert(selected);
+            } else {
+                flowerDAO.update(selected);
+            }
+            loadFlowersByType(selected.getType());
+            flowerTable.getSelectionModel().select(selected);
+        } catch (SQLException ex) {
+            ShowErrorUtil.showError("Помилка збереження", ex.getMessage());
+        }
+    }
+
+    private void addNewFlower() {
+        if (selectedType == null) {
+            ShowErrorUtil.showError("Не обрано тип квітки", "Будь ласка, виберіть тип квітки зліва.");
+            return;
+        }
+
+        Flower newFlower = new Flower();
+        newFlower.setType(selectedType);
+        updateFlowerFromForm(newFlower);
+
+        try {
+            flowerDAO.insert(newFlower);
+            loadFlowersByType(selectedType);
+            flowerTable.getSelectionModel().selectLast();
+        } catch (SQLException ex) {
+            ShowErrorUtil.showError("Помилка додавання квітки", ex.getMessage());
+        }
+    }
+
+    private void onDeleteButtonClicked() {
+        Flower selected = flowerTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            if (selected.getId() == 0) {
+                flowers.remove(selected);
+                clearForm();
+            } else {
+                try {
+                    flowerDAO.delete(selected);
+                    loadFlowersByType(selected.getType());
+                    clearForm();
+                } catch (SQLException ex) {
+                    ShowErrorUtil.showError("Помилка видалення", ex.getMessage());
+                }
+            }
+        }
+    }
+
+    private void fillForm(Flower flower) {
+        nameField.setText(flower.getName());
+        priceField.setText(String.valueOf(flower.getPrice()));
+        datePicker.setValue(flower.getPickedDate());
+    }
+
+    private void updateFlowerFromForm(Flower flower) {
+        flower.setName(nameField.getText());
+        try {
+            flower.setPrice(Double.parseDouble(priceField.getText()));
+        } catch (NumberFormatException e) {
+            flower.setPrice(0.0);
+        }
+
+        flower.setPickedDate(datePicker.getValue());
     }
 
     private void loadFlowerTypes() {
         flowerTypes.clear();
         try {
             flowerTypes.addAll(flowerTypeDAO.findAll());
+
+            if (!flowerTypes.isEmpty()) {
+                Platform.runLater(() -> flowerTypeList.getSelectionModel().selectFirst());
+            }
+
         } catch (SQLException e) {
-            showError("Помилка завантаження типів квітів", e.getMessage());
+            ShowErrorUtil.showError("Помилка завантаження типів квітів", e.getMessage());
         }
     }
 
     private void onAddFlowerType() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Додати тип квітки");
-        dialog.setHeaderText(null);
-        dialog.setContentText("Введіть назву нового типу:");
+        String name = newTypeField.getText().trim();
+        if (name.isEmpty()) {
+            ShowErrorUtil.showError("Помилка", "Назва не може бути пустою");
+            return;
+        }
 
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(name -> {
-            if (name.trim().isEmpty()) {
-                showError("Помилка", "Назва не може бути пустою");
-                return;
-            }
-            FlowerType newType = new FlowerType(0, name.trim());
-            try {
-                flowerTypeDAO.insert(newType);
-                loadFlowerTypes();  // оновити список після додавання
-            } catch (SQLException ex) {
-                showError("Помилка додавання", ex.getMessage());
-            }
-        });
+        FlowerType newType = new FlowerType(0, name);
+        try {
+            flowerTypeDAO.insert(newType);
+            loadFlowerTypes();
+            newTypeField.clear(); // очистити після додавання
+        } catch (SQLException ex) {
+            ShowErrorUtil.showError("Помилка додавання", ex.getMessage());
+        }
     }
-
-    private void showError(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private final ObservableList<Flower> currentFlowers = FXCollections.observableArrayList();
-
-
-
 
     private void loadFlowersByType(FlowerType type) {
         try {
@@ -151,21 +232,13 @@ public class FlowerViewController {
             flowers.setAll(flowerDAO.findByType(type));
             flowerCountLabel.setText("(" + flowers.size() + " квіток)");
         } catch (SQLException e) {
-            showError("Помилка завантаження квітів", e.getMessage());
+            ShowErrorUtil.showError("Помилка завантаження квітів", e.getMessage());
         }
     }
-    private void onAddNewFlowerRow() {
-        Flower newFlower = new Flower();
-        newFlower.setType(selectedType);
-        newFlower.setName("");
-        newFlower.setPrice(0.0);
-        newFlower.setTotalQuantity(1);
-        newFlower.setPickedDate(LocalDate.now());
 
-        flowers.add(newFlower);
-    }
     private void setupEditableColumns() {
         flowerTable.setEditable(true);
+
         flowerTable.getSelectionModel().selectedIndexProperty().addListener((obs, oldIndex, newIndex) -> {
             if (oldIndex != null && oldIndex.intValue() >= 0) {
                 TablePosition<Flower, ?> editingCell = flowerTable.getEditingCell();
@@ -175,105 +248,35 @@ public class FlowerViewController {
             }
         });
 
-        nameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getName()));
-        nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        nameColumn.setOnEditCommit(e -> {
-            Flower flower = e.getRowValue();
-            flower.setName(e.getNewValue());
-            flowerTable.edit(-1, null); // завершуємо редагування
-        });
+        TableColumnUtil.makeEditableStringColumn(nameColumn,
+                Flower::getName,
+                (flower, newName) -> {
+                    flower.setName(newName);
+                    flowerTable.edit(-1, null);
+                }
+        );
 
-        priceColumn.setCellValueFactory(data -> new SimpleDoubleProperty(data.getValue().getPrice()).asObject());
-        priceColumn.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
-        priceColumn.setOnEditCommit(e -> {
-            Flower flower = e.getRowValue();
-            flower.setPrice(e.getNewValue());
-            flowerTable.edit(-1, null);
-        });
+        TableColumnUtil.makeEditableDoubleColumn(priceColumn,
+                Flower::getPrice,
+                (flower, newPrice) -> {
+                    flower.setPrice(newPrice);
+                    flowerTable.edit(-1, null);
+                }
+        );
 
-        quantityColumn.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getTotalQuantity()).asObject());
-        quantityColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        quantityColumn.setOnEditCommit(e -> {
-            Flower flower = e.getRowValue();
-            flower.setTotalQuantity(e.getNewValue());
-            flowerTable.edit(-1, null);
-        });
 
-        dateColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getPickedDate()));
-        dateColumn.setCellFactory(column -> new DatePickerTableCell<>());
-        dateColumn.setEditable(true);
-
-        dateColumn.setOnEditCommit(e -> {
-            Flower flower = e.getRowValue();
-            flower.setPickedDate(e.getNewValue());
-            flowerTable.edit(-1, null);
-        });
+        TableColumnUtil.makeEditableDateColumn(dateColumn,
+                Flower::getPickedDate,
+                (flower, newDate) -> {
+                    flower.setPickedDate(newDate);
+                    flowerTable.edit(-1, null);
+                }
+        );
     }
 
-
-    /**
-     * Примусово оновити відображення рядка у таблиці,
-     * щоб відобразити внесені зміни у комірках.
-     */
-    private void refreshRow(Flower flower) {
-        int index = flowers.indexOf(flower);
-        if (index >= 0) {
-            flowers.set(index, flower); // це змусить TableView оновити цей рядок
-        }
+    private void clearForm() {
+        nameField.clear();
+        priceField.clear();
+        datePicker.setValue(null);
     }
-
-
-    private void setupActionColumns() {
-        saveColumn.setCellFactory(col -> new TableCell<>() {
-            private final Button btn = new Button("✔");
-            {
-                btn.setOnAction(e -> {
-                    Flower flower = getTableView().getItems().get(getIndex());
-                    try {
-                        if (flower.getId() == 0) {
-                            flowerDAO.insert(flower);
-                        } else {
-                            flowerDAO.update(flower);
-                        }
-                        loadFlowersByType(flower.getType()); // оновлення
-                    } catch (SQLException ex) {
-                        showError("Помилка збереження", ex.getMessage());
-                    }
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : btn);
-            }
-        });
-
-        deleteColumn.setCellFactory(col -> new TableCell<>() {
-            private final Button btn = new Button("✖");
-            {
-                btn.setOnAction(e -> {
-                    Flower flower = getTableView().getItems().get(getIndex());
-                    if (flower.getId() == 0) {
-                        flowers.remove(flower); // не збережений — просто прибрати
-                    } else {
-                        try {
-                            flowerDAO.delete(flower);
-                            loadFlowersByType(flower.getType());
-                        } catch (SQLException ex) {
-                            showError("Помилка видалення", ex.getMessage());
-                        }
-                    }
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : btn);
-            }
-        });
-    }
-
-
 }

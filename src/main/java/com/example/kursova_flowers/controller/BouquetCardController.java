@@ -1,6 +1,7 @@
 package com.example.kursova_flowers.controller;
 
 import com.example.kursova_flowers.model.Bouquet;
+import com.example.kursova_flowers.util.ImageUtil;
 import com.example.kursova_flowers.util.SceneUtil;
 import com.example.kursova_flowers.util.Scenes;
 import javafx.fxml.FXML;
@@ -29,10 +30,13 @@ public class BouquetCardController {
         nameLabel.setText(bouquet.getName());
         priceLabel.setText("Ціна: " + totalPrice + " грн");
 
-        // тимчасова заглушка картинки (можна кастомізувати пізніше)
-        imageView.setImage(new Image(getClass().getResource("/com/example/kursova_flowers/img/20250325_210057.png").toExternalForm()));
-
+        setRandomImage();
     }
+
+    private void setRandomImage(){Image randomImage = ImageUtil.getRandomBouquetImage();
+        if (randomImage != null) {
+            imageView.setImage(randomImage);
+        }}
 
     @FXML
     private void onInfo() {

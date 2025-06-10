@@ -13,24 +13,17 @@ public class MainController {
     @FXML private Button accessorysBtn;
     @FXML private Button exitBtn;
 
+
     @FXML
     public void initialize() {
-
-        createBtn.setOnAction(e -> openScene(Scenes.CREATE));
-        bouquetsBtn.setOnAction(e -> openScene(Scenes.BOUQUET));
-        flowersBtn.setOnAction(e -> openScene(Scenes.FLOWER));
-        accessorysBtn.setOnAction(e -> openScene(Scenes.ACCESSORY));
+        createBtn.setOnAction(e -> SceneUtil.openSceneFromButton(createBtn, Scenes.CREATE));
+        bouquetsBtn.setOnAction(e -> SceneUtil.openSceneFromButton(bouquetsBtn, Scenes.BOUQUET));
+        flowersBtn.setOnAction(e -> SceneUtil.openSceneFromButton(flowersBtn, Scenes.FLOWER));
+        accessorysBtn.setOnAction(e -> SceneUtil.openSceneFromButton(accessorysBtn, Scenes.ACCESSORY));
         exitBtn.setOnAction(e -> System.exit(0));
-
-
-
-
     }
 
-    private void openScene(Scenes scene) {
-        Stage stage = (Stage) createBtn.getScene().getWindow();
-        SceneUtil.setScene(stage, scene);
-    }
+
 
 
 }

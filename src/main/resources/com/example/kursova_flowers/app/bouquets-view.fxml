@@ -12,7 +12,7 @@
     <!-- Ліва панель -->
     <left>
         <VBox spacing="10" alignment="TOP_CENTER" style="-fx-padding: 10;">
-            <Button text="⬅ Повернутись на головну" onAction="#onBackToHome"/>
+            <Button fx:id="backButton" text="⬅ Повернутись на головну" onAction="#onBackToHome"/>
         </VBox>
     </left>
 

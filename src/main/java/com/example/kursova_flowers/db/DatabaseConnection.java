@@ -19,9 +19,7 @@ public class DatabaseConnection {
         String url = "jdbc:sqlite:" + absolutePath;
         Connection connection = DriverManager.getConnection(url);
 
-        // ✅ Увімкнення зовнішніх ключів
         connection.createStatement().execute("PRAGMA foreign_keys = ON");
-
         return connection;
     }
 

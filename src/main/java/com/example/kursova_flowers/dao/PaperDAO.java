@@ -1,4 +1,7 @@
 package com.example.kursova_flowers.dao;
+import com.example.kursova_flowers.model.Paper;
+import com.example.kursova_flowers.model.Ribbon;
+
 import java.sql.*;
 
 public class PaperDAO {
@@ -19,6 +22,29 @@ public class PaperDAO {
         """;
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(sql);
+        }
+    }
+
+    /** Вставляє новий запис і повертає об’єкт з оновленим id */
+    public Paper insert(Paper paper) throws SQLException {
+        String sql = "INSERT INTO paper (accessory_id, material) VALUES (?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, paper.getId());
+            ps.setString(2, paper.getMaterial());
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) paper.setId(rs.getInt(1));
+            }
+        }
+        return paper;
+    }
+
+    /** Видаляє запис за власним id */
+    public void delete(int id) throws SQLException {
+        String sql = "DELETE FROM paper WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
         }
     }
 }

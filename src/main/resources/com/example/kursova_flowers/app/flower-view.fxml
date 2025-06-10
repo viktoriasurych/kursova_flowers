@@ -11,6 +11,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.TextField?>
 <BorderPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.kursova_flowers.controller.FlowerViewController">
 
@@ -20,7 +22,10 @@
             <Button fx:id="backToMainButton" onAction="#handleOpenScene" text="← Повернутись на головну" maxWidth="Infinity" style="-fx-font-size: 14px;"/>
             <Label text="Тип квітки" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
             <ListView fx:id="flowerTypeList" VBox.vgrow="ALWAYS"/>
-            <Button fx:id="addButton" text="+" maxWidth="100" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+            <HBox spacing="5">
+                <TextField fx:id="newTypeField" promptText="Новий тип..." />
+                <Button fx:id="addButton" text="+" />
+            </HBox>
         </VBox>
     </left>
 
@@ -33,20 +38,35 @@
                 <Label fx:id="selectedTypeLabel" text="Назва типу" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
                 <Label fx:id="flowerCountLabel" text="(0 квіток)" style="-fx-font-size: 14px;" />
                 <Pane HBox.hgrow="ALWAYS"/>
-                <Button fx:id="addFlowerButton" text="+" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
             </HBox>
 
-            <!-- Таблиця квітів -->
-            <TableView fx:id="flowerTable" VBox.vgrow="ALWAYS">
+            <!-- Верхня частина: таблиця без кнопок -->
+            <TableView fx:id="flowerTable" VBox.vgrow="ALWAYS" prefHeight="300">
                 <columns>
                     <TableColumn fx:id="nameColumn" text="Назва квітки" prefWidth="150"/>
                     <TableColumn fx:id="priceColumn" text="Ціна" prefWidth="80"/>
-                    <TableColumn fx:id="quantityColumn" text="Кількість" prefWidth="80"/>
                     <TableColumn fx:id="dateColumn" text="Дата свіжості" prefWidth="120"/>
-                    <TableColumn fx:id="saveColumn" text="✔" prefWidth="40"/>
-                    <TableColumn fx:id="deleteColumn" text="✖" prefWidth="40"/>
+                    <!-- Прибираємо колонки з кнопками -->
                 </columns>
             </TableView>
+
+            <!-- Нижня частина: поля та кнопки -->
+            <GridPane hgap="10" vgap="10" alignment="CENTER_LEFT">
+                <Label text="Назва:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Ціна:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="priceField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Дата свіжості:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <DatePicker fx:id="datePicker" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                <HBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="1" alignment="CENTER_RIGHT">
+                    <Button fx:id="updateButton" text="+"/>
+                    <Button fx:id="deleteButton" text="-"/>
+                </HBox>
+            </GridPane>
 
         </VBox>
     </center>

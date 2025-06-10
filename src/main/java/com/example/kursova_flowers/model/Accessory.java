@@ -15,7 +15,7 @@ public class Accessory {
         this.color = color;
         this.note = note;
     }
-    // Геттери і сеттери...
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public Bouquet getBouquet() { return bouquet; }

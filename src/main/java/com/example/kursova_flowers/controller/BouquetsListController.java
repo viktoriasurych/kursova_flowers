@@ -9,6 +9,7 @@ import com.example.kursova_flowers.util.Scenes;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 
@@ -19,6 +20,8 @@ import java.util.List;
 public class BouquetsListController {
     @FXML
     private FlowPane bouquetsContainer;
+    @FXML
+    private Button backButton;
 
     @FXML
     public void initialize() throws SQLException, IOException {
@@ -30,31 +33,32 @@ public class BouquetsListController {
         List<Bouquet> bouquets = bdao.findAll();
 
         bouquetsContainer.getChildren().clear();
+
         for (Bouquet bouquet : bouquets) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/kursova_flowers/app/bouquet-card.fxml"));
-            Parent card = loader.load();
-            BouquetCardController controller = loader.getController();
-
-            double totalPrice = new BouquetCalculatorService().calculateTotalPrice(bouquet);
-
-            controller.setData(bouquet, totalPrice,
-                    () -> openEditBouquetForm(bouquet), // onEdit
-                    () -> deleteBouquet(bouquet)        // onDelete
+            // Завантажуємо fxml + контролер + додаємо до контейнера через утиліту
+            BouquetCardController controller = SceneUtil.loadSection( Scenes.CARDBOUQUET.getFxmlPath(),
+                    ctrl -> {
+                        double totalPrice = new BouquetCalculatorService().calculateTotalPrice(bouquet);
+                        ctrl.setData(bouquet, totalPrice,
+                                () -> openEditBouquetForm(bouquet), // onEdit
+                                () -> deleteBouquet(bouquet)        // onDelete
+                        );
+                    },
+                    node -> bouquetsContainer.getChildren().add(node)
             );
-
-            bouquetsContainer.getChildren().add(card);
         }
     }
 
     private void openEditBouquetForm(Bouquet bouquet) {
         try {
             Stage stage = (Stage) bouquetsContainer.getScene().getWindow();
-            // або інший спосіб отримати Stage
-            FXMLLoader loader = SceneUtil.setScene(stage, Scenes.CREATE);
-            if (loader != null) {
-                BouquetFormController controller = loader.getController();
-                controller.setBouquet(bouquet);
-            }
+            SceneUtil.setSceneWithController(
+                    stage,
+                    Scenes.CREATE,
+                    (BouquetFormController controller) -> {
+                        controller.setBouquet(bouquet);
+                    }
+            );
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,7 +76,6 @@ public class BouquetsListController {
 
     @FXML
     private void onBackToHome() throws IOException {
-       // SceneUtil.openScene((Stage) bouquetsContainer.getScene().getWindow(),
-         //       getClass().getResource("/com/example/kursova_flowers/app/home-view.fxml"));
+        SceneUtil.openSceneFromButton(backButton, Scenes.MAIN);
     }
 }

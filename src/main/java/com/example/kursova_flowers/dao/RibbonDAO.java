@@ -1,4 +1,7 @@
 package com.example.kursova_flowers.dao;
+import com.example.kursova_flowers.model.Box;
+import com.example.kursova_flowers.model.Ribbon;
+
 import java.sql.*;
 
 public class RibbonDAO {
@@ -21,4 +24,27 @@ public class RibbonDAO {
             stmt.execute(sql);
         }
     }
+    /** Вставляє новий запис і повертає об’єкт з оновленим id */
+    public Ribbon insert(Ribbon ribbon) throws SQLException {
+        String sql = "INSERT INTO ribbon (accessory_id, width) VALUES (?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, ribbon.getId());
+            ps.setDouble(2, ribbon.getWidth());
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) ribbon.setId(rs.getInt(1));
+            }
+        }
+        return ribbon;
+    }
+
+    /** Видаляє запис за власним id */
+    public void delete(int id) throws SQLException {
+        String sql = "DELETE FROM ribbon WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
+    }
+
 }

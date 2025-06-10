@@ -16,7 +16,7 @@ public class FlowerType {
 
     @Override
     public String toString() {
-        return this.name;  // або інше поле, яке має відображатись
+        return this.name;
     }
 
 }

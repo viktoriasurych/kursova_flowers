@@ -7,6 +7,8 @@ import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.function.Consumer;
+
 import javafx.scene.control.Button;
 
 
@@ -34,6 +36,33 @@ public class SceneUtil {
         return loader;
     }
 
+    public static <T> T loadSection(
+            String fxmlPath,
+            Consumer<T> controllerConsumer,
+            Consumer<Parent> nodeConsumer
+    ) throws IOException {
+        FXMLLoader loader = new FXMLLoader(SceneUtil.class.getResource(fxmlPath));
+        Parent node = loader.load();
+        T controller = loader.getController();
+
+        if (controllerConsumer != null) {
+            controllerConsumer.accept(controller);
+        }
+
+        if (nodeConsumer != null) {
+            nodeConsumer.accept(node);
+        }
+
+        return controller;
+    }
+
+    public static <T> void setSceneWithController(Stage stage, Scenes sceneEnum, Consumer<T> controllerConsumer) {
+        FXMLLoader loader = setScene(stage, sceneEnum);
+        if (loader != null && controllerConsumer != null) {
+            T controller = loader.getController();
+            controllerConsumer.accept(controller);
+        }
+    }
 
     public static void openSceneFromButton(Button button, Scenes scene) {
         Stage stage = (Stage) button.getScene().getWindow();

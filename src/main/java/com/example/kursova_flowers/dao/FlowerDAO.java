@@ -25,7 +25,6 @@ public class FlowerDAO {
                 type_id INTEGER,
                 price REAL NOT NULL,
                 picked_date TEXT NOT NULL,
-                quantity INTEGER NOT NULL,
                 FOREIGN KEY (type_id) REFERENCES flower_type(id)
             )
         """;
@@ -45,7 +44,6 @@ public class FlowerDAO {
                 flower.setId(rs.getInt("id"));
                 flower.setName(rs.getString("name"));
                 flower.setPrice(rs.getDouble("price"));
-                flower.setTotalQuantity(rs.getInt("quantity"));
 
                 String dateStr = rs.getString("picked_date");
                 if (dateStr != null) {
@@ -64,11 +62,10 @@ public class FlowerDAO {
 
 
     public void insert(Flower flower) throws SQLException {
-        String sql = "INSERT INTO flower (name, price, quantity, picked_date, type_id) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO flower (name, price, picked_date, type_id) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, flower.getName());
             stmt.setDouble(2, flower.getPrice());
-            stmt.setInt(3, flower.getTotalQuantity());
             stmt.setString(4, flower.getPickedDate().toString()); // формат yyyy-MM-dd
 
             stmt.setInt(5, flower.getType().getId());
@@ -83,11 +80,10 @@ public class FlowerDAO {
     }
 
     public void update(Flower flower) throws SQLException {
-        String sql = "UPDATE flower SET name = ?, price = ?, quantity = ?, picked_date = ? WHERE id = ?";
+        String sql = "UPDATE flower SET name = ?, price = ?, picked_date = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, flower.getName());
             stmt.setDouble(2, flower.getPrice());
-            stmt.setInt(3, flower.getTotalQuantity());
             stmt.setString(4, flower.getPickedDate().toString()); // формат yyyy-MM-dd
 
             stmt.setInt(5, flower.getId());

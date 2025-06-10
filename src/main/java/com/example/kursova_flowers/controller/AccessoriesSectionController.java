@@ -8,6 +8,8 @@ import com.example.kursova_flowers.model.AccessoryType;
 import com.example.kursova_flowers.model.Paper;
 import com.example.kursova_flowers.model.GreetingCard;
 import com.example.kursova_flowers.model.*;
+import com.example.kursova_flowers.util.TableColumnUtil;
+import com.example.kursova_flowers.util.TableViewHelper;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -20,6 +22,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class AccessoriesSectionController {
 
@@ -79,109 +84,104 @@ public class AccessoriesSectionController {
         accessoryTypeComboBox.setOnAction(e -> {
             AccessoryType selected = accessoryTypeComboBox.getValue();
             if (selected != null) {
-                updateExtraFieldForType(selected.getName());
+                updateExtraFieldForType(selected.getId());
             }
         });
         setupRowSelection();
 
     }
+
     private void setupRowSelection() {
-        cardsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                accessoryTypeComboBox.setValue(newVal.getType());
-                updateExtraFieldForType(newVal.getType().getName());
-                extraField.setText(newVal.getText());
-                colorField.setText(newVal.getColor());
-                extraInfoArea.setText(newVal.getNote());
+        setupSelectionListener(cardsTable,
+                GreetingCard::getText,
+                (type, value) -> extraField.setText(value),
+                GreetingCard::getType,
+                GreetingCard::getColor,
+                GreetingCard::getNote,
+                boxesTable, ribbonsTable, papersTable);
 
-                // Очистити інші вибори
-                boxesTable.getSelectionModel().clearSelection();
-                ribbonsTable.getSelectionModel().clearSelection();
-                papersTable.getSelectionModel().clearSelection();
-            }
-        });
+        setupSelectionListener(boxesTable,
+                Box::getBoxType,
+                (type, value) -> extraField.setText(value),
+                Box::getType,
+                Box::getColor,
+                Box::getNote,
+                cardsTable, ribbonsTable, papersTable);
 
-        boxesTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                accessoryTypeComboBox.setValue(newVal.getType());
-                updateExtraFieldForType(newVal.getType().getName());
-                extraField.setText(newVal.getBoxType());
-                colorField.setText(newVal.getColor());
-                extraInfoArea.setText(newVal.getNote());
+        setupSelectionListener(ribbonsTable,
+                r -> String.valueOf(r.getWidth()),
+                (type, value) -> extraField.setText(value),
+                Ribbon::getType,
+                Ribbon::getColor,
+                Ribbon::getNote,
+                cardsTable, boxesTable, papersTable);
 
-                // Очистити інші вибори
-                cardsTable.getSelectionModel().clearSelection();
-                ribbonsTable.getSelectionModel().clearSelection();
-                papersTable.getSelectionModel().clearSelection();
-            }
-        });
-
-        ribbonsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                accessoryTypeComboBox.setValue(newVal.getType());
-                updateExtraFieldForType(newVal.getType().getName());
-                extraField.setText(String.valueOf(newVal.getWidth()));
-                colorField.setText(newVal.getColor());
-                extraInfoArea.setText(newVal.getNote());
-
-                // Очистити інші вибори
-                cardsTable.getSelectionModel().clearSelection();
-                boxesTable.getSelectionModel().clearSelection();
-                papersTable.getSelectionModel().clearSelection();
-            }
-        });
-
-        papersTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                accessoryTypeComboBox.setValue(newVal.getType());
-                updateExtraFieldForType(newVal.getType().getName());
-                extraField.setText(newVal.getMaterial());
-                colorField.setText(newVal.getColor());
-                extraInfoArea.setText(newVal.getNote());
-
-                // Очистити інші вибори
-                cardsTable.getSelectionModel().clearSelection();
-                boxesTable.getSelectionModel().clearSelection();
-                ribbonsTable.getSelectionModel().clearSelection();
-            }
-        });
-
+        setupSelectionListener(papersTable,
+                Paper::getMaterial,
+                (type, value) -> extraField.setText(value),
+                Paper::getType,
+                Paper::getColor,
+                Paper::getNote,
+                cardsTable, boxesTable, ribbonsTable);
     }
+
 
     private void setupTables() {
-        cardsTable.setItems(greetingCards);
-        boxesTable.setItems(boxes);
-        ribbonsTable.setItems(ribbons);
-        papersTable.setItems(papers);
+        TableViewHelper.setupReadOnlyTable(cardsTable, greetingCards, new TableViewHelper.ColumnConfig[] {
+                new TableViewHelper.ColumnConfig<>(cardTextColumn, GreetingCard::getText, String.class),
+                new TableViewHelper.ColumnConfig<>(cardColorColumn, GreetingCard::getColor, String.class),
+                new TableViewHelper.ColumnConfig<>(cardPriceColumn, c -> c.getType().getBasePrice(), Double.class),
+                new TableViewHelper.ColumnConfig<>(cardNoteColumn, GreetingCard::getNote, String.class)
+        });
 
-        cardTextColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getText()));
-        cardColorColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getColor()));
-        cardPriceColumn.setCellValueFactory(cellData ->
-                new SimpleDoubleProperty(cellData.getValue().getType().getBasePrice()).asObject());
+        TableViewHelper.setupReadOnlyTable(boxesTable, boxes, new TableViewHelper.ColumnConfig[] {
+                new TableViewHelper.ColumnConfig<>(boxTypeColumn, Box::getBoxType, String.class),
+                new TableViewHelper.ColumnConfig<>(boxColorColumn, Box::getColor, String.class),
+                new TableViewHelper.ColumnConfig<>(boxPriceColumn, b -> b.getType().getBasePrice(), Double.class),
+                new TableViewHelper.ColumnConfig<>(boxNoteColumn, Box::getNote, String.class)
+        });
 
-        cardNoteColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNote()));
+        TableViewHelper.setupReadOnlyTable(ribbonsTable, ribbons, new TableViewHelper.ColumnConfig[] {
+                new TableViewHelper.ColumnConfig<>(ribbonWidthColumn, Ribbon::getWidth, Double.class),
+                new TableViewHelper.ColumnConfig<>(ribbonColorColumn, Ribbon::getColor, String.class),
+                new TableViewHelper.ColumnConfig<>(ribbonPriceColumn, r -> r.getType().getBasePrice(), Double.class),
+                new TableViewHelper.ColumnConfig<>(ribbonNoteColumn, Ribbon::getNote, String.class)
+        });
 
-        boxTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getBoxType()));
-        boxColorColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getColor()));
-        boxPriceColumn.setCellValueFactory(cellData ->
-                new SimpleDoubleProperty(cellData.getValue().getType().getBasePrice()).asObject());
-        boxNoteColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNote()));
-
-
-        ribbonWidthColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getWidth()).asObject());
-        ribbonColorColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getColor()));
-        ribbonPriceColumn.setCellValueFactory(cellData ->
-                new SimpleDoubleProperty(cellData.getValue().getType().getBasePrice()).asObject());
-        ribbonNoteColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNote()));
-
-
-        paperMaterialColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMaterial()));
-        paperColorColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getColor()));
-        paperPriceColumn.setCellValueFactory(cellData ->
-                new SimpleDoubleProperty(cellData.getValue().getType().getBasePrice()).asObject());
-        paperNoteColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNote()));
-
+        TableViewHelper. setupReadOnlyTable(papersTable, papers, new TableViewHelper.ColumnConfig[] {
+                new TableViewHelper.ColumnConfig<>(paperMaterialColumn, Paper::getMaterial, String.class),
+                new TableViewHelper.ColumnConfig<>(paperColorColumn, Paper::getColor, String.class),
+                new TableViewHelper.ColumnConfig<>(paperPriceColumn, p -> p.getType().getBasePrice(), Double.class),
+                new TableViewHelper.ColumnConfig<>(paperNoteColumn, Paper::getNote, String.class)
+        });
     }
+
+
+
+    private <T> void setupSelectionListener(TableView<T> table,
+                                            Function<T, String> extraFieldValueGetter,
+                                            BiConsumer<AccessoryType, String> extraFieldUpdater,
+                                            Function<T, AccessoryType> typeGetter,
+                                            Function<T, String> colorGetter,
+                                            Function<T, String> noteGetter,
+                                            TableView<?>... othersToClear) {
+
+        table.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                AccessoryType type = typeGetter.apply(newVal);
+                accessoryTypeComboBox.setValue(type);
+                updateExtraFieldForType(type.getId());
+                extraField.setText(extraFieldValueGetter.apply(newVal));
+                colorField.setText(colorGetter.apply(newVal));
+                extraInfoArea.setText(noteGetter.apply(newVal));
+
+                for (TableView<?> other : othersToClear) {
+                    other.getSelectionModel().clearSelection();
+                }
+            }
+        });
+    }
+
 
     private void loadAccessoryTypes() {
         try {
@@ -189,45 +189,33 @@ public class AccessoriesSectionController {
             accessoryTypeComboBox.setItems(FXCollections.observableArrayList(types));
             if (!types.isEmpty()) {
                 accessoryTypeComboBox.getSelectionModel().selectFirst();
-                updateExtraFieldForType(types.get(0).getName());
+                updateExtraFieldForType(types.get(0).getId());
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void updateExtraFieldForType(String typeName) {
+    private record FieldInfo(String label, String prompt) {}
 
-        switch (typeName) {
-            case "листівка":
-                extraFieldLabel.setText("Текст листівки:");
-                extraField.setPromptText("Введіть текст");
+    // 1. Структура для зберігання інформації про додаткове поле на основі типу
+    private static final Map<Integer, FieldInfo> accessoryFieldInfoMap = Map.of(
+            1, new FieldInfo("Текст листівки:", "Введіть текст"),
+            2, new FieldInfo("Розмір коробки:", "Введіть розмір"),
+            3, new FieldInfo("Ширина стрічки:", "Введіть ширину (число)"),
+            4, new FieldInfo("Матеріал паперу:", "Введіть матеріал")
+    );
 
-                break;
-            case "коробка":
-                extraFieldLabel.setText("Розмір коробки:");
-                extraField.setPromptText("Введіть розмір");
+    private void updateExtraFieldForType(int typeName) {
+        FieldInfo info = accessoryFieldInfoMap.getOrDefault(typeName,
+                new FieldInfo("Додаткове поле:", ""));
 
-                break;
-            case "стрічка":
-                extraFieldLabel.setText("Ширина стрічки:");
-                extraField.setPromptText("Введіть ширину (число)");
-
-                break;
-            case "папір":
-                extraFieldLabel.setText("Матеріал паперу:");
-                extraField.setPromptText("Введіть матеріал");
-
-                break;
-            default:
-                extraFieldLabel.setText("Додаткове поле:");
-                extraField.setPromptText("");
-        }
-
+        extraFieldLabel.setText(info.label);
+        extraField.setPromptText(info.prompt);
         extraField.clear();
     }
 
-    private void addAccessory() {
+      private void addAccessory() {
         AccessoryType type = accessoryTypeComboBox.getValue();
         if (type == null) return;
 
@@ -241,21 +229,15 @@ public class AccessoriesSectionController {
         }
 
         try {
-            switch (type.getName()) {
-                case "листівка":
-                    greetingCards.add(new GreetingCard(type, color, note, extra));
-                    break;
-                case "коробка":
-                    boxes.add(new Box(type, color, note, extra));
-                    break;
-                case "стрічка":
+            switch (type.getId()) {
+                case 1 -> greetingCards.add(new GreetingCard(type, color, note, extra));
+                case 2 -> boxes.add(new Box(type, color, note, extra));
+                case 3 ->{
                     double width = Double.parseDouble(extra);
-                    ribbons.add(new Ribbon(type, color, note, width));
-                    break;
-                case "папір":
+                    ribbons.add(new Ribbon(type, color, note, width));}
+                case 4->
                     papers.add(new Paper(type, color, note, extra));
-                    break;
-                default:
+                default->
                     showAlert("Помилка", "Невідомий тип аксесуару", Alert.AlertType.ERROR);
             }
             clearForm();
@@ -271,24 +253,18 @@ public class AccessoriesSectionController {
 
     }
 
+
     private void deleteSelectedAccessory() {
         AccessoryType selected = accessoryTypeComboBox.getValue();
 
         if (selected == null) return;
 
-        switch (selected.getName()) {
-            case "листівка":
-                greetingCards.remove(cardsTable.getSelectionModel().getSelectedItem());
-                break;
-            case "коробка":
-                boxes.remove(boxesTable.getSelectionModel().getSelectedItem());
-                break;
-            case "стрічка":
-                ribbons.remove(ribbonsTable.getSelectionModel().getSelectedItem());
-                break;
-            case "папір":
-                papers.remove(papersTable.getSelectionModel().getSelectedItem());
-                break;
+        switch (selected.getId()) {
+            case 1-> greetingCards.remove(cardsTable.getSelectionModel().getSelectedItem());
+            case 2-> boxes.remove(boxesTable.getSelectionModel().getSelectedItem());
+            case 3-> ribbons.remove(ribbonsTable.getSelectionModel().getSelectedItem());
+            case 4-> papers.remove(papersTable.getSelectionModel().getSelectedItem());
+
         }
     }
 
@@ -352,7 +328,6 @@ all.clear();
             }
         }
     }
-
 
 
 

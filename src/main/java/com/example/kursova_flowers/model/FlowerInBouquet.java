@@ -15,7 +15,6 @@ public class FlowerInBouquet {
         this.stemLength = stemLength;
         this.quantity = quantity;
     }
-    // Геттери і сеттери...
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public Flower getFlower() { return flower; }

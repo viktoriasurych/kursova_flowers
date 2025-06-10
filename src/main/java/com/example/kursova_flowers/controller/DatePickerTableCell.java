@@ -13,7 +13,6 @@ public class DatePickerTableCell<S> extends TableCell<S, LocalDate> {
     public DatePickerTableCell() {
         datePicker.setEditable(false);
 
-        // При виборі дати — зберігаємо
         datePicker.setOnAction(e -> {
             if (datePicker.getValue() != null) {
                 commitEdit(datePicker.getValue());

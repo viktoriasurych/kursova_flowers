@@ -38,16 +38,6 @@ public class BoxDAO {
         return box;
     }
 
-    /** Оновлює поле style за accessory_id */
-    public void update(Box box) throws SQLException {
-        String sql = "UPDATE box SET style = ? WHERE accessory_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, box.getBoxType());
-          //  ps.setInt(2, box.getAccessory().getId());
-            ps.executeUpdate();
-        }
-    }
-
     /** Видаляє запис за власним id */
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM box WHERE id = ?";
