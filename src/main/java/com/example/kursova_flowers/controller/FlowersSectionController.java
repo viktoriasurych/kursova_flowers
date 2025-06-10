@@ -11,7 +11,6 @@ import com.example.kursova_flowers.util.ShowErrorUtil;
 import com.example.kursova_flowers.util.TableColumnUtil;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,8 +22,11 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FlowersSectionController {
+    private static final Logger logger = Logger.getLogger(FlowersSectionController.class.getName());
 
     @FXML
     private TableView<FlowerInBouquet> flowersInBouquetTable;
@@ -196,6 +198,7 @@ public class FlowersSectionController {
     private List<FlowerInBouquet> originalFlowersList;
     private void onSortByFreshness() {
         FlowersSortService.sortByFreshness(flowersInBouquet);
+        logger.info("Застосовано сортування по свіжості");
     }
 
 
@@ -203,12 +206,13 @@ public class FlowersSectionController {
         try {
             List<FlowerType> flowerTypes = flowerTypeDAO.findAll();
             flowerTypeComboBox.setItems(FXCollections.observableArrayList(flowerTypes));
-
+            logger.info("Типи квітів завантажено: " + flowerTypes.size());
             if (!flowerTypes.isEmpty()) {
                 flowerTypeComboBox.getSelectionModel().select(0);
                 onFlowerTypeSelected();
             }
         } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Помилка при завантаженні типів квітів", e);
             ShowErrorUtil.showError("Помилка при завантаженні типів квітів: " , e.getMessage());
         }
     }
@@ -223,7 +227,7 @@ public class FlowersSectionController {
         }
 
         List<FlowerInBouquet> filtered = filtrService.filterByStemLengthRange(originalFlowersList, minLength, maxLength);
-
+        logger.info("Застосовано фільтр по довжині стебла. Кількість знайдених: " + filtered.size());
         flowersInBouquet.setAll(filtered);
     }
     private FlowersFiltrService filtrService = new FlowersFiltrService();
@@ -248,6 +252,7 @@ public class FlowersSectionController {
     private void onFlowerTypeSelected() {
         FlowerType selectedType = flowerTypeComboBox.getSelectionModel().getSelectedItem();
         if (selectedType == null) {
+            logger.warning("Тип квітки не вибрано.");
             flowerComboBox.setItems(FXCollections.observableArrayList());
             quantitySpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1,1,1));
             return;
@@ -255,6 +260,8 @@ public class FlowersSectionController {
         try {
             List<Flower> flowers = flowerDAO.findByType(selectedType);
             flowerComboBox.setItems(FXCollections.observableArrayList(flowers));
+            logger.info("Квітки типу '" + selectedType.getName() + "' завантажено: " + flowers.size());
+
             if (!flowers.isEmpty()) {
                 flowerComboBox.getSelectionModel().select(0);
                 onFlowerSelected();
@@ -262,6 +269,7 @@ public class FlowersSectionController {
                 quantitySpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 1, 1));
             }
         } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Помилка при завантаженні квіток", e);
             ShowErrorUtil.showError("Помилка при завантаженні квіток: " , e.getMessage());
         }
 
@@ -283,12 +291,14 @@ public class FlowersSectionController {
         Flower selectedFlower = flowerComboBox.getSelectionModel().getSelectedItem();
         if (selectedFlower == null) {
             ShowErrorUtil.showError("помилка", "Виберіть квітку.");
+            logger.warning("Спроба додати квітку без вибору.");
             return;
         }
 
         int quantity = quantitySpinner.getValue();
         if (quantity <= 0) {
             ShowErrorUtil.showError("помилка", "Кількість має бути більшою за 0.");
+            logger.warning("Невірна кількість при додаванні квітки: " + quantity);
             return;
         }
 
@@ -296,11 +306,13 @@ public class FlowersSectionController {
         try {
             stemLength = Double.parseDouble(stemLengthField.getText());
             if (stemLength <= 0) {
+                logger.warning("Невірна довжина стебла при додаванні квітки: " + stemLengthField.getText());
                 ShowErrorUtil.showError("помилка", "Довжина стебла має бути більшою за 0.");
                 return;
             }
         } catch (NumberFormatException e) {
             ShowErrorUtil.showError("помилка", "Неправильне значення довжини стебла.");
+            logger.warning("Помилка парсингу довжини стебла: " + stemLengthField.getText());
             return;
         }
 
@@ -331,6 +343,8 @@ public class FlowersSectionController {
                 newFib.setStemLength(stemLength);
                 flowersInBouquet.add(newFib);
             }
+            logger.info("Квітку додано до букету: " + selectedFlower.getName() +
+                    ", Кількість: " + quantity + ", Довжина стебла: " + stemLength);
         }
 
         updateTotalPrice();

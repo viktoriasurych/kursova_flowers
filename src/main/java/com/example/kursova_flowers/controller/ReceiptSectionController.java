@@ -10,11 +10,15 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class ReceiptSectionController {
+    private static final Logger logger = LoggerFactory.getLogger(ReceiptSectionController.class);
+
     @FXML private VBox flowersSection;
     @FXML private VBox cardsSection;
     @FXML private VBox boxesSection;
@@ -135,46 +139,6 @@ public class ReceiptSectionController {
     }
 
 
-    /*   @FXML
-    public void initialize() {
-
-
-        // Налаштування колонок квітів
-        flowerTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFlower().getType().getName()));
-        flowerNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFlower().getName()));
-        flowerStemLengthColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getStemLength()).asObject());;
-        flowerQuantityColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getQuantity()).asObject());;
-        flowerTotalPriceColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getQuantity() * cellData.getValue().getFlower().getPrice()).asObject());;
-
-
-        // Колонки листівок
-        cardTextColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getText()));
-        cardColorColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getColor()));
-        cardPriceColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getType().getBasePrice()).asObject());
-
-        // Колонки коробок
-        boxTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getBoxType()));
-        boxColorColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getColor()));
-        boxPriceColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getType().getBasePrice()).asObject());
-
-        // Колонки стрічок
-        ribbonWidthColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getWidth()).asObject());
-        ribbonColorColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getColor()));
-        ribbonPriceColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getType().getBasePrice()).asObject());
-
-
-        // Колонки паперу
-        paperMaterialColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMaterial()));
-        paperColorColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getColor()));
-        paperPriceColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getType().getBasePrice()).asObject());
-
-
-
-        // Кнопки
-        saveButton.setOnAction(event -> onSave());
-        printButton.setOnAction(event -> onPrint());
-    }*/
-
     /**
      * Встановити контролери секцій для отримання локальних списків і назви букета
      */
@@ -197,58 +161,11 @@ public class ReceiptSectionController {
         );
     }
 
-    /**
-     * Оновити дані з контролерів у чек-вікні
-     */
-   /* private void updateDataFromControllers() {
-        if (flowersController == null || accessoriesController == null || bouquetFormController == null) {
-            return;
-        }
-        bindTableHeight(flowersTable);
-        bindTableHeight(cardsTable);
-        bindTableHeight(boxesTable);
-        bindTableHeight(ribbonsTable);
-        bindTableHeight(papersTable);
 
-        // Квіти
-        ObservableList<FlowerInBouquet> flowers = flowersController.getFlowersInBouquet();
-        flowersTable.setItems(flowers);
-        flowersSection.setVisible(!flowers.isEmpty());
-        flowersSection.setManaged(!flowers.isEmpty());
-
-        // Аксесуари
-        cardsTable.setItems(accessoriesController.getGreetingCards());
-        cardsSection.setVisible(!accessoriesController.getGreetingCards().isEmpty());
-        cardsSection.setManaged(!accessoriesController.getGreetingCards().isEmpty());
-
-        boxesTable.setItems(accessoriesController.getBoxes());
-        boxesSection.setVisible(!accessoriesController.getBoxes().isEmpty());
-        boxesSection.setManaged(!accessoriesController.getBoxes().isEmpty());
-
-        ribbonsTable.setItems(accessoriesController.getRibbons());
-        ribbonsSection.setVisible(!accessoriesController.getRibbons().isEmpty());
-        ribbonsSection.setManaged(!accessoriesController.getRibbons().isEmpty());
-
-        papersTable.setItems(accessoriesController.getPapers());
-        papersSection.setVisible(!accessoriesController.getPapers().isEmpty());
-        papersSection.setManaged(!accessoriesController.getPapers().isEmpty());
-
-
-        // Порахувати загальну ціну
-
-        Bouquet bouquet = new Bouquet();
-        bouquet.setFlowers(flowersController.getFlowersInBouquet());
-        bouquet.setAccessories(accessoriesController.getAllAccessories());
-
-        System.out.println();
-        double total = calculatorService.calculateTotalPrice(bouquet);
-
-
-        totalPriceLabel.setText(String.format("%.2f грн", total));
-    }*/
 
     private void updateDataFromControllers() {
         if (flowersController == null || accessoriesController == null || bouquetFormController == null) {
+            logger.warn("Один або кілька контролерів не встановлено, пропуск оновлення даних");
             return;
         }
 
@@ -262,6 +179,7 @@ public class ReceiptSectionController {
         ObservableList<FlowerInBouquet> flowers = flowersController.getFlowersInBouquet();
         flowersSection.setVisible(!flowers.isEmpty());
         flowersSection.setManaged(!flowers.isEmpty());
+        logger.debug("Завантажено {} квітів у таблицю", flowers.size());
 
         TableViewHelper.setupReadOnlyTable(flowersTable, flowers, new TableViewHelper.ColumnConfig[]{
                 new TableViewHelper.ColumnConfig<>(flowerTypeColumn,
@@ -331,6 +249,7 @@ public class ReceiptSectionController {
 
         double total = calculatorService.calculateTotalPrice(bouquet);
         totalPriceLabel.setText(String.format("%.2f грн", total));
+        logger.info("Оновлення даних завершено. Загальна ціна букета: {} грн", total);
     }
 
 
@@ -353,11 +272,12 @@ public class ReceiptSectionController {
             String filePath = "receipt_" + bouquet.getName().replaceAll("\\s+", "_") + ".pdf";
             ReceiptPdfService pdfService = new ReceiptPdfService();
             pdfService.generatePdfReceipt(bouquet, filePath);
-
+            logger.info("Друк букета завершено успішно");
             ShowErrorUtil.showError("Успіх", "Чек збережено у файлі: " + filePath);
         } catch (Exception e) {
             e.printStackTrace();
             ShowErrorUtil.showError("Помилка", "Не вдалося створити PDF.");
+            logger.error("Помилка під час друку букета", e);
         }
     }
 
@@ -421,17 +341,13 @@ public class ReceiptSectionController {
                         break;
                 }
 
-                // Якщо аксесуар - Box, Ribbon, Paper, GreetingCard, треба додати відповідні підкласи
-                /*if (acc instanceof Box) {
-                    BoxDAO boxDAO = new BoxDAO(connection);
-                    boxDAO.insert((Box) acc);
-                }*/
-                // Аналогічно для Ribbon, Paper, GreetingCard
+
             }
 
             connection.commit();
             ShowErrorUtil.showError("Успіх", "Букет успішно збережено!");
 
+            logger.info("Букет успішно збережено");
             SceneUtil.openSceneFromButton(saveButton, Scenes.BOUQUET);
 
 
@@ -442,6 +358,7 @@ public class ReceiptSectionController {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
+            logger.error("Помилка під час збереження букета", e);
             ShowErrorUtil.showError("Помилка", "Не вдалося зберегти букет.");
         } finally {
             try {

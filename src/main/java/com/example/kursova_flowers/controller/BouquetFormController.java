@@ -5,21 +5,19 @@ import com.example.kursova_flowers.db.DBManager;
 import com.example.kursova_flowers.model.Bouquet;
 import com.example.kursova_flowers.util.SceneUtil;
 import com.example.kursova_flowers.util.Scenes;
-import com.sun.jdi.connect.spi.Connection;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class BouquetFormController {
-
+    private static final Logger LOGGER = Logger.getLogger(BouquetFormController.class.getName());
     @FXML
     private VBox leftPanel;
     @FXML
@@ -46,7 +44,7 @@ public class BouquetFormController {
    public void initialize() {
        try {
           connection = DBManager.getConnection();
-
+           LOGGER.info("Ініціалізація BouquetFormController...");
            // Попередньо завантажуємо всі сторінки та зберігаємо їх
            loadFlowersPage();
            loadAccessoriesPage();
@@ -57,11 +55,13 @@ public class BouquetFormController {
 
        } catch (IOException e) {
            e.printStackTrace();
+           LOGGER.log(Level.SEVERE, "Помилка під час ініціалізації контролера букету", e);
        }
    }
 
     // Методи для перемикання сторінок
     private void loadFlowersPage() throws IOException {
+        LOGGER.info("Завантаження сторінки квітів...");
         flowersSectionController = SceneUtil.loadSection(
                 Scenes.SECTIONFLOWER.getFxmlPath(),
                 controller -> controller.setConnection(connection),
@@ -70,6 +70,7 @@ public class BouquetFormController {
     }
 
     private void loadAccessoriesPage() throws IOException {
+        LOGGER.info("Завантаження сторінки квітів...");
         accessoriesSectionController = SceneUtil.loadSection(
                 Scenes.SECTIONACCESSORY.getFxmlPath(),
                 controller -> controller.setConnection(connection),
@@ -78,6 +79,7 @@ public class BouquetFormController {
     }
 
     private void loadSummaryPage() throws IOException {
+        LOGGER.info("Завантаження підсумкової сторінки...");
         receiptSectionController = SceneUtil.loadSection(
                 Scenes.SECTIONRECEIPT.getFxmlPath(),
                 controller -> {
@@ -127,6 +129,7 @@ public class BouquetFormController {
     public void setBouquet(Bouquet bouquet) {
         this.currentBouquet = bouquet;
         if (bouquet != null) {
+            LOGGER.info("Завантаження існуючого букету: " + bouquet.getName());
             nameField.setText(bouquet.getName());
 
             // Передати список квітів і аксесуарів у відповідні контролери
@@ -137,6 +140,8 @@ public class BouquetFormController {
             if (receiptSectionController != null) {
                 receiptSectionController.refreshData();
             }
+        } else {
+            LOGGER.warning("Передано порожнє значення букету в setBouquet.");
         }
     }
 

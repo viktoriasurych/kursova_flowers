@@ -10,7 +10,10 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.util.logging.Logger;
+
 public class BouquetCardController {
+    private static final Logger LOGGER = Logger.getLogger(BouquetCardController.class.getName());
     @FXML
     private ImageView imageView;
     @FXML private Label nameLabel;
@@ -23,6 +26,7 @@ public class BouquetCardController {
     private Runnable onDeleteCallback;
 
     public void setData(Bouquet bouquet, double totalPrice, Runnable onEdit, Runnable onDelete) {
+        LOGGER.info("Встановлення даних для картки букета: " + bouquet.getName());
         this.bouquet = bouquet;
         this.onEdit = onEdit;
         this.onDeleteCallback = onDelete;

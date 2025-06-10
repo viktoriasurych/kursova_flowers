@@ -19,9 +19,11 @@ import javafx.scene.control.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FlowerViewController {
-
+    private static final Logger LOGGER = Logger.getLogger(FlowerViewController.class.getName());
     @FXML
     private ListView<FlowerType> flowerTypeList;
 
@@ -70,11 +72,13 @@ public class FlowerViewController {
 
     private void initializeDAOs() {
         try {
+            LOGGER.info("Ініціалізація DAO");
             Connection connection = DBManager.getConnection(); // Отримуємо єдине підключення
             flowerTypeDAO = new FlowerTypeDAO(connection);
             flowerDAO = new FlowerDAO(connection);
             loadFlowerTypes();
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Помилка ініціалізації DAO", e);
             ShowErrorUtil.showError("Помилка ініціалізації DAO", e.getMessage());
         }
     }
@@ -129,19 +133,22 @@ public class FlowerViewController {
         updateFlowerFromForm(selected);
         try {
             if (selected.getId() == 0) {
+                LOGGER.info("Вставка нової квітки в базу: " + selected.getName());
                 flowerDAO.insert(selected);
             } else {
+                LOGGER.info("Оновлення квітки в базі: " + selected.getName());
                 flowerDAO.update(selected);
             }
             loadFlowersByType(selected.getType());
             flowerTable.getSelectionModel().select(selected);
         } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Помилка збереження квітки", ex);
             ShowErrorUtil.showError("Помилка збереження", ex.getMessage());
         }
     }
 
     private void addNewFlower() {
-        if (selectedType == null) {
+        if (selectedType == null) { LOGGER.warning("Спроба додати квітку без вибраного типу");
             ShowErrorUtil.showError("Не обрано тип квітки", "Будь ласка, виберіть тип квітки зліва.");
             return;
         }
@@ -166,11 +173,12 @@ public class FlowerViewController {
                 flowers.remove(selected);
                 clearForm();
             } else {
-                try {
+                try {  LOGGER.info("Видалення квітки з бази: " + selected.getName());
                     flowerDAO.delete(selected);
                     loadFlowersByType(selected.getType());
                     clearForm();
                 } catch (SQLException ex) {
+                    LOGGER.log(Level.SEVERE, "Помилка видалення квітки", ex);
                     ShowErrorUtil.showError("Помилка видалення", ex.getMessage());
                 }
             }
@@ -196,9 +204,10 @@ public class FlowerViewController {
 
     private void loadFlowerTypes() {
         flowerTypes.clear();
+
         try {
             flowerTypes.addAll(flowerTypeDAO.findAll());
-
+            LOGGER.info("Завантаження типів квітів");
             if (!flowerTypes.isEmpty()) {
                 Platform.runLater(() -> flowerTypeList.getSelectionModel().selectFirst());
             }
@@ -227,11 +236,12 @@ public class FlowerViewController {
 
     private void loadFlowersByType(FlowerType type) {
         try {
-            System.out.println("Selected FlowerType id = " + type.getId());
+            LOGGER.info("Завантаження квітів типу: " + type.getName());
 
             flowers.setAll(flowerDAO.findByType(type));
             flowerCountLabel.setText("(" + flowers.size() + " квіток)");
         } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Помилка завантаження квітів", e);
             ShowErrorUtil.showError("Помилка завантаження квітів", e.getMessage());
         }
     }

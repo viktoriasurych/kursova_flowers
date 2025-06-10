@@ -1,33 +1,30 @@
 package com.example.kursova_flowers.controller;
 
 import com.example.kursova_flowers.dao.AccessoryTypeDAO;
-import com.example.kursova_flowers.dao.*;
 import com.example.kursova_flowers.model.Box;
 import com.example.kursova_flowers.model.Ribbon;
 import com.example.kursova_flowers.model.AccessoryType;
 import com.example.kursova_flowers.model.Paper;
 import com.example.kursova_flowers.model.GreetingCard;
 import com.example.kursova_flowers.model.*;
-import com.example.kursova_flowers.util.TableColumnUtil;
+import com.example.kursova_flowers.util.ShowErrorUtil;
 import com.example.kursova_flowers.util.TableViewHelper;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class AccessoriesSectionController {
-
+    private static final Logger logger = LoggerFactory.getLogger(AccessoriesSectionController.class);
     @FXML private ComboBox<AccessoryType> accessoryTypeComboBox;
     @FXML private Label extraFieldLabel;
     @FXML private TextField extraField;
@@ -71,6 +68,7 @@ public class AccessoriesSectionController {
     public void setConnection(Connection connection) {
         this.connection = connection;
         this.accessoryTypeDao = new AccessoryTypeDAO(connection);
+        logger.info("Встановлено з'єднання з БД та створено AccessoryTypeDAO");
         loadAccessoryTypes();
     }
 
@@ -84,6 +82,7 @@ public class AccessoriesSectionController {
         accessoryTypeComboBox.setOnAction(e -> {
             AccessoryType selected = accessoryTypeComboBox.getValue();
             if (selected != null) {
+                logger.debug("Вибрано тип аксесуару: {} (id={})", selected.getName(), selected.getId());
                 updateExtraFieldForType(selected.getId());
             }
         });
@@ -191,8 +190,9 @@ public class AccessoriesSectionController {
                 accessoryTypeComboBox.getSelectionModel().selectFirst();
                 updateExtraFieldForType(types.get(0).getId());
             }
+            logger.info("Завантажено типи аксесуарів: {}", types.size());
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Помилка завантаження типів аксесуарів з БД", e);
         }
     }
 
@@ -217,14 +217,17 @@ public class AccessoriesSectionController {
 
       private void addAccessory() {
         AccessoryType type = accessoryTypeComboBox.getValue();
-        if (type == null) return;
+          if (type == null) {
+              logger.warn("Спроба додати аксесуар з порожніми обов'язковими полями");
+              return;
+          }
 
         String extra = extraField.getText();
         String color = colorField.getText();
         String note = extraInfoArea.getText();
 
         if (extra.isBlank() || color.isBlank()) {
-            showAlert("Помилка", "Усі поля мають бути заповнені", Alert.AlertType.WARNING);
+            ShowErrorUtil.showError("Помилка", "Усі поля мають бути заповнені");
             return;
         }
 
@@ -237,19 +240,18 @@ public class AccessoriesSectionController {
                     ribbons.add(new Ribbon(type, color, note, width));}
                 case 4->
                     papers.add(new Paper(type, color, note, extra));
-                default->
-                    showAlert("Помилка", "Невідомий тип аксесуару", Alert.AlertType.ERROR);
+                default -> {
+                    logger.error("Невідомий тип аксесуару: {}", type.getId());
+                    ShowErrorUtil.showError("Помилка", "Невідомий тип аксесуару");
+                    return;
+                }
             }
+            logger.info("Додано аксесуар: тип='{}', extra='{}', color='{}', note='{}'",
+                    type.getName(), extra, color, note);
             clearForm();
         } catch (NumberFormatException e) {
-            showAlert("Помилка", "Ширина стрічки має бути числом", Alert.AlertType.ERROR);
+            ShowErrorUtil.showError("Помилка", "Ширина стрічки має бути числом");
         }
-
-        System.out.println("Додаємо аксесуар:");
-        System.out.println("Тип: " + type.getName());
-        System.out.println("Extra: '" + extra + "'");
-        System.out.println("Color: '" + color + "'");
-        System.out.println("Note: '" + note + "'");
 
     }
 
@@ -257,7 +259,10 @@ public class AccessoriesSectionController {
     private void deleteSelectedAccessory() {
         AccessoryType selected = accessoryTypeComboBox.getValue();
 
-        if (selected == null) return;
+        if (selected == null) {
+            logger.warn("Спроба видалити аксесуар без вибору типу");
+            return;
+        }
 
         switch (selected.getId()) {
             case 1-> greetingCards.remove(cardsTable.getSelectionModel().getSelectedItem());
@@ -266,6 +271,7 @@ public class AccessoriesSectionController {
             case 4-> papers.remove(papersTable.getSelectionModel().getSelectedItem());
 
         }
+        logger.info("Видалено аксесуар");
     }
 
     private void clearForm() {
@@ -274,13 +280,6 @@ public class AccessoriesSectionController {
         extraInfoArea.clear();
     }
 
-    private void showAlert(String title, String msg, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.showAndWait();
-    }
 
     public ObservableList<GreetingCard> getGreetingCards() {
         return greetingCards;
@@ -314,6 +313,7 @@ all.clear();
         papers.clear();
 
         if (accessories != null) {
+            logger.info("Встановлення аксесуарів, кількість: {}", accessories.size());
             for (Accessory acc : accessories) {
                 System.out.println(acc.getId());
                 if (acc instanceof GreetingCard) {

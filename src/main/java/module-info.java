@@ -9,7 +9,7 @@ module com.example.kursova_flowers {
     requires layout;
     requires kernel;
     requires io;
-
+    requires org.slf4j;
     // opens com.example.kursova_flowers to javafx.fxml;
     //exports com.example.kursova_flowers;
     exports com.example.kursova_flowers.app;

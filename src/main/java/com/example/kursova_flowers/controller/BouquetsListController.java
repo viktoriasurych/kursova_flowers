@@ -16,8 +16,11 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class BouquetsListController {
+    private static final Logger logger = Logger.getLogger(BouquetFormController.class.getName());
     @FXML
     private FlowPane bouquetsContainer;
     @FXML
@@ -47,6 +50,7 @@ public class BouquetsListController {
                     node -> bouquetsContainer.getChildren().add(node)
             );
         }
+        logger.info("Завантажено список букетів: " + bouquets.size() + " шт.");
     }
 
     private void openEditBouquetForm(Bouquet bouquet) {
@@ -59,9 +63,10 @@ public class BouquetsListController {
                         controller.setBouquet(bouquet);
                     }
             );
-
+            logger.info("Відкрито форму редагування букета: " + bouquet.getName());
         } catch (Exception e) {
             e.printStackTrace();
+            logger.log(Level.SEVERE, "Не вдалося відкрити форму редагування", e);
         }
     }
 
@@ -69,8 +74,10 @@ public class BouquetsListController {
         try {
             new BouquetDAO(DBManager.getConnection()).delete(bouquet.getId());
             loadBouquets(); // оновити список після видалення
+            logger.info("Букет видалено: " + bouquet.getName());
         } catch (Exception e) {
             e.printStackTrace();
+            logger.log(Level.SEVERE, "Помилка при видаленні букета: " + bouquet.getName(), e);
         }
     }
 
