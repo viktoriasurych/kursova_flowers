@@ -6,10 +6,18 @@ import javafx.util.Callback;
 
 import java.time.LocalDate;
 
+/**
+ * Клітинка таблиці з DatePicker для вибору дати у TableView.
+ *
+ * @param <S> тип об’єкта рядка таблиці
+ */
 public class DatePickerTableCell<S> extends TableCell<S, LocalDate> {
 
     private final DatePicker datePicker = new DatePicker();
 
+    /**
+     * Конструктор, що налаштовує DatePicker і події для редагування дати.
+     */
     public DatePickerTableCell() {
         datePicker.setEditable(false);
 
@@ -19,7 +27,6 @@ public class DatePickerTableCell<S> extends TableCell<S, LocalDate> {
             }
         });
 
-        // ENTER або ESC
         datePicker.getEditor().setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 commitEdit(datePicker.getValue());
@@ -31,6 +38,12 @@ public class DatePickerTableCell<S> extends TableCell<S, LocalDate> {
         setContentDisplay(ContentDisplay.TEXT_ONLY);
     }
 
+    /**
+     * Оновлює відображення клітинки таблиці залежно від стану.
+     *
+     * @param item дата для відображення
+     * @param empty чи є клітинка пустою
+     */
     @Override
     protected void updateItem(LocalDate item, boolean empty) {
         super.updateItem(item, empty);
@@ -49,6 +62,10 @@ public class DatePickerTableCell<S> extends TableCell<S, LocalDate> {
         }
     }
 
+    /**
+     * Починає режим редагування клітинки.
+     * Встановлює дату в DatePicker і показує його.
+     */
     @Override
     public void startEdit() {
         super.startEdit();
@@ -60,6 +77,10 @@ public class DatePickerTableCell<S> extends TableCell<S, LocalDate> {
         }
     }
 
+    /**
+     * Скасовує режим редагування.
+     * Повертає відображення у вигляді тексту.
+     */
     @Override
     public void cancelEdit() {
         super.cancelEdit();
@@ -68,16 +89,15 @@ public class DatePickerTableCell<S> extends TableCell<S, LocalDate> {
         setContentDisplay(ContentDisplay.TEXT_ONLY);
     }
 
+    /**
+     * Завершує редагування і комітить нове значення.
+     *
+     * @param newValue нова дата, обрана користувачем
+     */
     @Override
     public void commitEdit(LocalDate newValue) {
         super.commitEdit(newValue);
         setContentDisplay(ContentDisplay.TEXT_ONLY);
     }
 
-    /**
-     * Фабрика для використання в TableColumn
-     */
-    public static <S> Callback<TableColumn<S, LocalDate>, TableCell<S, LocalDate>> forTableColumn() {
-        return column -> new DatePickerTableCell<>();
-    }
 }

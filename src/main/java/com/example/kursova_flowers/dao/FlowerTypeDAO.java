@@ -33,7 +33,6 @@ public class FlowerTypeDAO {
         }
     }
 
-    // Видалення квітки за id
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM flower_type WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -42,7 +41,6 @@ public class FlowerTypeDAO {
         }
     }
 
-    // Отримати всі типи квітів (для відображення в таблиці)
     public List<FlowerType> findAll() throws SQLException {
         List<FlowerType> list = new ArrayList<>();
         String sql = "SELECT id, name FROM flower_type ORDER BY name";

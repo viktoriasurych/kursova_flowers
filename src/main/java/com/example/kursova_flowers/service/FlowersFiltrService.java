@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FlowersFiltrService {
+
     /**
      * Фільтрує список квіток за діапазоном довжини стебла.
      * @param flowers список квіток

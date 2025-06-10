@@ -1,12 +1,9 @@
 package com.example.kursova_flowers.dao;
 
-import com.example.kursova_flowers.model.Flower;
-import com.example.kursova_flowers.model.FlowerType;
+import com.example.kursova_flowers.model.*;
 
 import java.sql.*;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,17 +46,12 @@ public class FlowerDAO {
                 if (dateStr != null) {
                     flower.setPickedDate(LocalDate.parse(dateStr));
                 }
-
-
-
                 flower.setType(type);
                 flowers.add(flower);
             }
         }
         return flowers;
     }
-
-
 
     public void insert(Flower flower) throws SQLException {
         String sql = "INSERT INTO flower (name, price, picked_date, type_id) VALUES (?, ?, ?, ?, ?)";
@@ -84,7 +76,7 @@ public class FlowerDAO {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, flower.getName());
             stmt.setDouble(2, flower.getPrice());
-            stmt.setString(4, flower.getPickedDate().toString()); // формат yyyy-MM-dd
+            stmt.setString(4, flower.getPickedDate().toString());
 
             stmt.setInt(5, flower.getId());
 

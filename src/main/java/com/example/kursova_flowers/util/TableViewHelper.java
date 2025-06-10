@@ -1,15 +1,19 @@
 package com.example.kursova_flowers.util;
 
-import com.example.kursova_flowers.model.AccessoryType;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class TableViewHelper {
 
+
+    /**
+     * Клас для опису конфігурації одного стовпця таблиці:
+     * - стовпець {@link TableColumn}
+     * - геттер для отримання значення
+     * - тип значення (String, Integer, Double)
+     */
     public static class ColumnConfig<T, V> {
         public final TableColumn<T, V> column;
         public final Function<T, V> getter;
@@ -22,6 +26,16 @@ public class TableViewHelper {
         }
     }
 
+    /**
+     * Налаштовує {@link TableView} як таблицю лише для читання
+     * на основі переданих конфігурацій стовпців.
+     *
+     * @param table   таблиця для налаштування
+     * @param items   список елементів, які відображаються в таблиці
+     * @param columns масив конфігурацій стовпців
+     * @param <T>     тип елементів у таблиці
+     * @param <V>     тип значення у стовпці
+     */
     public static <T, V> void setupReadOnlyTable(TableView<T> table,
                                                  ObservableList<T> items,
                                                  ColumnConfig<T, V>[] columns) {

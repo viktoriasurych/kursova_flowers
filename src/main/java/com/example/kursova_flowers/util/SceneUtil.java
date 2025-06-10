@@ -17,6 +17,13 @@ public class SceneUtil {
     private static final double HEIGHT = 600;
     private static final String STYLESHEET = "/com/example/kursova_flowers/styles/style.css";
 
+    /**
+     * Завантажує FXML-файл та встановлює сцену у вікно.
+     *
+     * @param stage     поточне вікно JavaFX
+     * @param sceneEnum перелічення {@link Scenes}, що містить шлях до FXML та заголовок
+     * @return {@link FXMLLoader} для доступу до контролера сцени
+     */
     public static FXMLLoader setScene(Stage stage, Scenes sceneEnum) {
         FXMLLoader loader = null;
         try {
@@ -36,6 +43,16 @@ public class SceneUtil {
         return loader;
     }
 
+    /**
+     * Завантажує секцію з FXML і передає контролер і вузол (Node) у відповідні споживачі.
+     *
+     * @param fxmlPath           шлях до FXML-файлу
+     * @param controllerConsumer обробник контролера (може бути null)
+     * @param nodeConsumer       обробник вузла сцени (може бути null)
+     * @param <T>                тип контролера
+     * @return екземпляр контролера
+     * @throws IOException якщо FXML-файл не знайдено або не може бути прочитаний
+     */
     public static <T> T loadSection(
             String fxmlPath,
             Consumer<T> controllerConsumer,
@@ -56,6 +73,14 @@ public class SceneUtil {
         return controller;
     }
 
+    /**
+     * Встановлює сцену та дозволяє працювати з контролером через переданий {@link Consumer}.
+     *
+     * @param stage              вікно JavaFX
+     * @param sceneEnum          сцена з enum
+     * @param controllerConsumer обробник контролера
+     * @param <T>                тип контролера
+     */
     public static <T> void setSceneWithController(Stage stage, Scenes sceneEnum, Consumer<T> controllerConsumer) {
         FXMLLoader loader = setScene(stage, sceneEnum);
         if (loader != null && controllerConsumer != null) {
@@ -64,6 +89,12 @@ public class SceneUtil {
         }
     }
 
+    /**
+     * Відкриває нову сцену при натисканні на кнопку.
+     *
+     * @param button кнопка, з якої було ініційовано перехід
+     * @param scene  сцена, яка має бути відкритою
+     */
     public static void openSceneFromButton(Button button, Scenes scene) {
         Stage stage = (Stage) button.getScene().getWindow();
         setScene(stage, scene);

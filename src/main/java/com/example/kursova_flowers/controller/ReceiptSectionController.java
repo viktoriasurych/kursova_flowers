@@ -2,8 +2,7 @@ package com.example.kursova_flowers.controller;
 
 import com.example.kursova_flowers.dao.*;
 import com.example.kursova_flowers.model.*;
-import com.example.kursova_flowers.service.BouquetCalculatorService;
-import com.example.kursova_flowers.service.ReceiptPdfService;
+import com.example.kursova_flowers.service.*;
 import com.example.kursova_flowers.util.*;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
@@ -17,6 +16,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class ReceiptSectionController {
+
     private static final Logger logger = LoggerFactory.getLogger(ReceiptSectionController.class);
 
     @FXML private VBox flowersSection;
@@ -25,68 +25,40 @@ public class ReceiptSectionController {
     @FXML private VBox ribbonsSection;
     @FXML private VBox papersSection;
 
-    @FXML
-    private Label bouquetNameLabel;
+    @FXML private Label bouquetNameLabel;
 
-    @FXML
-    private TableView<FlowerInBouquet> flowersTable;
-    @FXML
-    private TableColumn<FlowerInBouquet, String> flowerTypeColumn;
-    @FXML
-    private TableColumn<FlowerInBouquet, String> flowerNameColumn;
-    @FXML
-    private TableColumn<FlowerInBouquet, Double> flowerStemLengthColumn;
-    @FXML
-    private TableColumn<FlowerInBouquet, Integer> flowerQuantityColumn;
-    @FXML
-    private TableColumn<FlowerInBouquet, Double> flowerTotalPriceColumn;
+    @FXML private TableView<FlowerInBouquet> flowersTable;
+    @FXML private TableColumn<FlowerInBouquet, String> flowerTypeColumn;
+    @FXML private TableColumn<FlowerInBouquet, String> flowerNameColumn;
+    @FXML private TableColumn<FlowerInBouquet, Double> flowerStemLengthColumn;
+    @FXML private TableColumn<FlowerInBouquet, Integer> flowerQuantityColumn;
+    @FXML private TableColumn<FlowerInBouquet, Double> flowerTotalPriceColumn;
 
-    @FXML
-    private TableView<GreetingCard> cardsTable;
-    @FXML
-    private TableColumn<GreetingCard, String> cardTextColumn;
-    @FXML
-    private TableColumn<GreetingCard, String> cardColorColumn;
-    @FXML
-    private TableColumn<GreetingCard, Double> cardPriceColumn;
+    @FXML private TableView<GreetingCard> cardsTable;
+    @FXML private TableColumn<GreetingCard, String> cardTextColumn;
+    @FXML private TableColumn<GreetingCard, String> cardColorColumn;
+    @FXML private TableColumn<GreetingCard, Double> cardPriceColumn;
 
-    @FXML
-    private TableView<Box> boxesTable;
-    @FXML
-    private TableColumn<Box, String> boxTypeColumn;
-    @FXML
-    private TableColumn<Box, String> boxColorColumn;
-    @FXML
-    private TableColumn<Box, Double> boxPriceColumn;
+    @FXML private TableView<Box> boxesTable;
+    @FXML private TableColumn<Box, String> boxTypeColumn;
+    @FXML private TableColumn<Box, String> boxColorColumn;
+    @FXML private TableColumn<Box, Double> boxPriceColumn;
 
-    @FXML
-    private TableView<Ribbon> ribbonsTable;
-    @FXML
-    private TableColumn<Ribbon, Double> ribbonWidthColumn;
-    @FXML
-    private TableColumn<Ribbon, String> ribbonColorColumn;
-    @FXML
-    private TableColumn<Ribbon, Double> ribbonPriceColumn;
+    @FXML private TableView<Ribbon> ribbonsTable;
+    @FXML private TableColumn<Ribbon, Double> ribbonWidthColumn;
+    @FXML private TableColumn<Ribbon, String> ribbonColorColumn;
+    @FXML private TableColumn<Ribbon, Double> ribbonPriceColumn;
 
-    @FXML
-    private TableView<Paper> papersTable;
-    @FXML
-    private TableColumn<Paper, String> paperMaterialColumn;
-    @FXML
-    private TableColumn<Paper, String> paperColorColumn;
-    @FXML
-    private TableColumn<Paper, Double> paperPriceColumn;
+    @FXML private TableView<Paper> papersTable;
+    @FXML private TableColumn<Paper, String> paperMaterialColumn;
+    @FXML private TableColumn<Paper, String> paperColorColumn;
+    @FXML private TableColumn<Paper, Double> paperPriceColumn;
 
-    @FXML
-    private Label totalPriceLabel;
+    @FXML private Label totalPriceLabel;
 
-    @FXML
-    private Button saveButton;
+    @FXML private Button saveButton;
+    @FXML private Button printButton;
 
-    @FXML
-    private Button printButton;
-
-    // Контролери секцій - встановлюються ззовні (з BouquetFormController або іншого)
     private FlowersSectionController flowersController;
     private AccessoriesSectionController accessoriesController;
     private BouquetFormController bouquetFormController;
@@ -99,13 +71,22 @@ public class ReceiptSectionController {
 
     }
 
+    /**
+     * Прив'язує текстове поле з назвою букета до мітки.
+     *
+     * @param nameField текстове поле з назвою
+     */
     public void bindBouquetName(TextField nameField) {
         bouquetNameLabel.textProperty().bind(nameField.textProperty());
     }
 
     @FXML
     public void initialize() {
-        // Квіти
+        setColumn();
+    }
+
+    public void setColumn() {
+
         TableColumnUtil.makeReadOnlyStringColumn(flowerTypeColumn, item -> item.getFlower().getType().getName());
         TableColumnUtil.makeReadOnlyStringColumn(flowerNameColumn, item -> item.getFlower().getName());
         TableColumnUtil.makeReadOnlyDoubleColumn(flowerStemLengthColumn, FlowerInBouquet::getStemLength);
@@ -113,34 +94,32 @@ public class ReceiptSectionController {
         TableColumnUtil.makeReadOnlyDoubleColumn(flowerTotalPriceColumn,
                 item -> item.getQuantity() * item.getFlower().getPrice());
 
-        // Листівки
         TableColumnUtil.makeReadOnlyStringColumn(cardTextColumn, GreetingCard::getText);
         TableColumnUtil.makeReadOnlyStringColumn(cardColorColumn, GreetingCard::getColor);
         TableColumnUtil.makeReadOnlyDoubleColumn(cardPriceColumn, item -> item.getType().getBasePrice());
 
-        // Коробки
         TableColumnUtil.makeReadOnlyStringColumn(boxTypeColumn, Box::getBoxType);
         TableColumnUtil.makeReadOnlyStringColumn(boxColorColumn, Box::getColor);
         TableColumnUtil.makeReadOnlyDoubleColumn(boxPriceColumn, item -> item.getType().getBasePrice());
 
-        // Стрічки
         TableColumnUtil.makeReadOnlyDoubleColumn(ribbonWidthColumn, Ribbon::getWidth);
         TableColumnUtil.makeReadOnlyStringColumn(ribbonColorColumn, Ribbon::getColor);
         TableColumnUtil.makeReadOnlyDoubleColumn(ribbonPriceColumn, item -> item.getType().getBasePrice());
 
-        // Папір
         TableColumnUtil.makeReadOnlyStringColumn(paperMaterialColumn, Paper::getMaterial);
         TableColumnUtil.makeReadOnlyStringColumn(paperColorColumn, Paper::getColor);
         TableColumnUtil.makeReadOnlyDoubleColumn(paperPriceColumn, item -> item.getType().getBasePrice());
 
-        // Кнопки
         saveButton.setOnAction(event -> onSave());
         printButton.setOnAction(event -> onPrint());
     }
 
-
     /**
-     * Встановити контролери секцій для отримання локальних списків і назви букета
+     * Встановлює зовнішні контролери, необхідні для завантаження даних у секцію квитанції.
+     *
+     * @param flowersController контролер квітів
+     * @param accessoriesController контролер аксесуарів
+     * @param bouquetFormController контролер форми букета
      */
     public void setControllers(FlowersSectionController flowersController,
                                AccessoriesSectionController accessoriesController,
@@ -152,17 +131,25 @@ public class ReceiptSectionController {
 
         updateDataFromControllers();
     }
+
+    /**
+     * Прив'язує висоту таблиці до кількості її рядків.
+     *
+     * @param table таблиця, яку потрібно адаптувати
+     */
     private void bindTableHeight(TableView<?> table) {
-        table.setFixedCellSize(25); // або 24 — залежно від вашої теми
+        table.setFixedCellSize(25);
         table.prefHeightProperty().bind(
                 Bindings.size(table.getItems())
                         .multiply(table.getFixedCellSize())
-                        .add(30) // додатково для заголовка таблиці
+                        .add(30)
         );
     }
 
-
-
+    /**
+     * Оновлює таблиці та секції інтерфейсу на основі даних із зовнішніх контролерів.
+     * Встановлює видимість секцій, оновлює загальну вартість букета.
+     */
     private void updateDataFromControllers() {
         if (flowersController == null || accessoriesController == null || bouquetFormController == null) {
             logger.warn("Один або кілька контролерів не встановлено, пропуск оновлення даних");
@@ -252,17 +239,17 @@ public class ReceiptSectionController {
         logger.info("Оновлення даних завершено. Загальна ціна букета: {} грн", total);
     }
 
-
+    /**
+     * Оновлює дані у всіх таблицях та секціях на основі актуального стану контролерів квітів та аксесуарів.
+     * Перераховує загальну ціну букета.
+     */
     public void refreshData() {
         updateDataFromControllers();
     }
 
-
-
     private void onPrint() {
         System.out.println("Друк букета: " + bouquetNameLabel.getText());
         try {
-            // Отримати букет з форми
             Bouquet bouquet = bouquetFormController.getCurrentBouquet();
             if (bouquet == null) {
                 ShowErrorUtil.showError("Помилка", "Немає букета для друку.");
@@ -280,7 +267,6 @@ public class ReceiptSectionController {
             logger.error("Помилка під час друку букета", e);
         }
     }
-
 
     private void onSave() {
         System.out.println("Збереження букета: " + bouquetNameLabel.getText());
@@ -304,23 +290,20 @@ public class ReceiptSectionController {
                 bouquetDAO.insert(bouquet);
             } else {
                 bouquet.setName(name);
-                bouquetDAO.update(bouquet); // потрібно реалізувати метод оновлення в DAO
-                // Можливо, також видалити старі записи про квіти і аксесуари, щоб замінити на нові
+                bouquetDAO.update(bouquet);
                 fibDAO.deleteByBouquetId(bouquet.getId());
                 accessoryDAO.deleteByBouquetId(bouquet.getId());
             }
 
-            // 3. Вставити квіти з bouquet
             ObservableList<FlowerInBouquet> flowers = flowersController.getFlowersInBouquet();
             for (FlowerInBouquet fib : flowers) {
-                fib.setBouquet(bouquet);  // зв'язати квітку з букетом
+                fib.setBouquet(bouquet);
                 fibDAO.insert(fib);
             }
 
-            // 4. Вставити аксесуари
             ObservableList<Accessory> accessories = accessoriesController.getAllAccessories();
             for (Accessory acc : accessories) {
-                acc.setBouquet(bouquet); // зв'язати аксесуар з букетом
+                acc.setBouquet(bouquet);
                 accessoryDAO.insert(acc);
 
                 switch (acc.getType().getId()){
@@ -368,7 +351,5 @@ public class ReceiptSectionController {
             }
         }
     }
-
-
 
 }

@@ -52,7 +52,6 @@ public class BouquetDAO {
                     bouquet.setId(rs.getInt("id"));
                     bouquet.setName(rs.getString("name"));
 
-                    // завантажити квіти та аксесуари
                     FlowerInBouquetDAO flowerDAO = new FlowerInBouquetDAO(connection);
                     bouquet.setFlowers(flowerDAO.findByBouquetId(bouquet.getId()));
 
@@ -65,7 +64,6 @@ public class BouquetDAO {
 
             return bouquets;
 
-
     }
 
     public void update(Bouquet bouquet) throws SQLException {
@@ -76,7 +74,6 @@ public class BouquetDAO {
             stmt.executeUpdate();
         }
     }
-
 
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM bouquet WHERE id = ?";

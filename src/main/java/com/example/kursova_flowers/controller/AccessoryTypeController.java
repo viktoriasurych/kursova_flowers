@@ -1,14 +1,10 @@
 package com.example.kursova_flowers.controller;
 
-import com.example.kursova_flowers.dao.AccessoryTypeDAO;
+import com.example.kursova_flowers.dao.*;
 import com.example.kursova_flowers.db.DBManager;
-import com.example.kursova_flowers.model.AccessoryType;
-import com.example.kursova_flowers.util.SceneUtil;
-import com.example.kursova_flowers.util.Scenes;
-import com.example.kursova_flowers.util.ShowErrorUtil;
-import com.example.kursova_flowers.util.TableColumnUtil;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import com.example.kursova_flowers.model.*;
+import com.example.kursova_flowers.util.*;
+import javafx.collections.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -18,25 +14,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AccessoryTypeController {
+
     private static final Logger LOGGER = Logger.getLogger(AccessoryTypeController.class.getName());
+
     @FXML
     private TableView<AccessoryType> accessoryTable;
-
     @FXML
     private TableColumn<AccessoryType, String> nameColumn;
-
     @FXML
     private TableColumn<AccessoryType, Double> priceColumn;
-
     @FXML
     private TableColumn<AccessoryType, Void> saveColumn;
-
-    private final ObservableList<AccessoryType> accessories = FXCollections.observableArrayList();
-
-    private AccessoryTypeDAO accessoryDAO;
-
     @FXML
     private Button backToMainButton;
+
+    private final ObservableList<AccessoryType> accessories = FXCollections.observableArrayList();
+    private AccessoryTypeDAO accessoryDAO;
 
     @FXML
     private void handleOpenScene(ActionEvent event) {
@@ -55,9 +48,7 @@ public class AccessoryTypeController {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Помилка ініціалізації DAO", e);
             ShowErrorUtil.showError("Помилка ініціалізації DAO", e.getMessage());
-
         }
-
         setupTable();
     }
 
@@ -77,15 +68,12 @@ public class AccessoryTypeController {
         accessoryTable.setItems(accessories);
         accessoryTable.setEditable(true);
 
-        // Назва — тільки для читання
         TableColumnUtil.makeReadOnlyStringColumn(nameColumn, AccessoryType::getName);
 
-        // Ціна — редагована колонка
         TableColumnUtil.makeEditableDoubleColumn(priceColumn,
                 AccessoryType::getBasePrice,
                 AccessoryType::setBasePrice);
 
-        // Кнопка збереження
         TableColumnUtil.makeSaveButtonColumn(saveColumn, (accessoryType, index) -> {
             try {
                 LOGGER.info("Збереження аксесуара: ID=" + accessoryType.getId() + ", нова ціна=" + accessoryType.getBasePrice());
@@ -97,7 +85,6 @@ public class AccessoryTypeController {
             }
         });
     }
-
 
 }
 

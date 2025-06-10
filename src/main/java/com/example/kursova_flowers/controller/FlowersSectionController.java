@@ -1,93 +1,54 @@
 package com.example.kursova_flowers.controller;
 
-import com.example.kursova_flowers.dao.FlowerDAO;
-import com.example.kursova_flowers.dao.FlowerTypeDAO;
-import com.example.kursova_flowers.model.Flower;
-import com.example.kursova_flowers.model.FlowerInBouquet;
-import com.example.kursova_flowers.model.FlowerType;
-import com.example.kursova_flowers.service.FlowersFiltrService;
-import com.example.kursova_flowers.service.FlowersSortService;
-import com.example.kursova_flowers.util.ShowErrorUtil;
-import com.example.kursova_flowers.util.TableColumnUtil;
+import com.example.kursova_flowers.dao.*;
+import com.example.kursova_flowers.model.*;
+import com.example.kursova_flowers.service.*;
+import com.example.kursova_flowers.util.*;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.beans.property.*;
+import javafx.collections.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FlowersSectionController {
+
     private static final Logger logger = Logger.getLogger(FlowersSectionController.class.getName());
 
-    @FXML
-    private TableView<FlowerInBouquet> flowersInBouquetTable;
+    @FXML private TableView<FlowerInBouquet> flowersInBouquetTable;
+    @FXML private TableColumn<FlowerInBouquet, String> colFlowerType;
+    @FXML private TableColumn<FlowerInBouquet, String> colFlowerName;
+    @FXML private TableColumn<FlowerInBouquet, Integer> colQuantity;
+    @FXML private TableColumn<FlowerInBouquet, String> colFreshness;
+    @FXML private TableColumn<FlowerInBouquet, Double> colStemLength;
+    @FXML private TableColumn<FlowerInBouquet, Double> colPrice;
 
-    @FXML
-    private TableColumn<FlowerInBouquet, String> colFlowerType;
+    @FXML private Label totalPriceLabel;
+    @FXML private ComboBox<FlowerType> flowerTypeComboBox;
+    @FXML private ComboBox<Flower> flowerComboBox;
+    @FXML private Spinner<Integer> quantitySpinner;
+    @FXML private TextField stemLengthField;
 
-    @FXML
-    private TableColumn<FlowerInBouquet, String> colFlowerName;
-
-    @FXML
-    private TableColumn<FlowerInBouquet, Integer> colQuantity;
-    @FXML
-    private TableColumn<FlowerInBouquet, String> colFreshness;
-
-
-    @FXML
-    private TableColumn<FlowerInBouquet, Double> colStemLength;
-
-    @FXML
-    private TableColumn<FlowerInBouquet, Double> colPrice;
-
-    @FXML
-    private Label totalPriceLabel;
-
-    @FXML
-    private ComboBox<FlowerType> flowerTypeComboBox;
-
-    @FXML
-    private ComboBox<Flower> flowerComboBox;
-
-    @FXML
-    private Spinner<Integer> quantitySpinner;
-
-    @FXML
-    private TextField stemLengthField;
-
-    @FXML
-    private Button addFlowerButton;
-
-    @FXML
-    private Button removeFlowerButton;
-    @FXML
-    private Button sortByFreshnessButton;
+    @FXML private Button addFlowerButton;
+    @FXML private Button removeFlowerButton;
+    @FXML private Button sortByFreshnessButton;
+    @FXML private TextField minLengthField;
+    @FXML private TextField maxLengthField;
+    @FXML private Button findByLengthButton;
+    @FXML private Button resetFilterButton;
 
     private ObservableList<FlowerInBouquet> flowersInBouquet = FXCollections.observableArrayList();
+    private List<FlowerInBouquet> originalFlowersList;
 
     private FlowerTypeDAO flowerTypeDAO;
     private FlowerDAO flowerDAO;
 
-    @FXML
-    private TextField minLengthField;
-
-    @FXML
-    private TextField maxLengthField;
-
-    @FXML
-    private Button findByLengthButton;
-
-    @FXML
-    private Button resetFilterButton;
+    private FlowersFiltrService filtrService = new FlowersFiltrService();
 
     private Connection connection;
 
@@ -121,14 +82,28 @@ public class FlowersSectionController {
         resetFilterButton.setOnAction(e -> onResetFilter());
     }
 
+    private void initializeData() {
+        try {
+            List<FlowerType> flowerTypes = flowerTypeDAO.findAll();
+            flowerTypeComboBox.setItems(FXCollections.observableArrayList(flowerTypes));
+            logger.info("Типи квітів завантажено: " + flowerTypes.size());
+            if (!flowerTypes.isEmpty()) {
+                flowerTypeComboBox.getSelectionModel().select(0);
+                onFlowerTypeSelected();
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Помилка при завантаженні типів квітів", e);
+            ShowErrorUtil.showError("Помилка при завантаженні типів квітів: " , e.getMessage());
+        }
+    }
+
     private void setupTableColumns() {
-        // Використання утиліти для простих колонок з редагуванням/читанням
+
         TableColumnUtil.makeReadOnlyStringColumn(colFlowerType, fib -> fib.getFlower().getType().getName());
         TableColumnUtil.makeReadOnlyStringColumn(colFlowerName, fib -> fib.getFlower().getName());
         TableColumnUtil.makeReadOnlyIntegerColumn(colQuantity, FlowerInBouquet::getQuantity);
         TableColumnUtil.makeReadOnlyDoubleColumn(colStemLength, FlowerInBouquet::getStemLength);
 
-        // Ціна вираховується з кількості * ціни квітки, тому без редагування
         colPrice.setCellValueFactory(cellData ->
                 new SimpleDoubleProperty(
                         cellData.getValue().getQuantity() * cellData.getValue().getFlower().getPrice()
@@ -136,7 +111,6 @@ public class FlowersSectionController {
         );
         colPrice.setEditable(false);
 
-        // Стовпець з датою свіжості (як рядок)
         colFreshness.setCellValueFactory(cellData -> {
             LocalDate date = cellData.getValue().getFlower().getPickedDate();
             String value = (date != null) ? date.toString() : "";
@@ -148,7 +122,6 @@ public class FlowersSectionController {
     }
 
     private void setupQuantitySpinner() {
-        // Задаємо Spinner без ліміту кількості (1 - 1000)
         quantitySpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 1000, 1));
     }
 
@@ -160,6 +133,9 @@ public class FlowersSectionController {
         });
     }
 
+    /**
+     * Встановлює вибір рядка у таблиці квітів.
+     */
     private void setupTableSelectionListener() {
         flowersInBouquetTable.setOnMouseClicked(event -> {
             FlowerInBouquet selected = flowersInBouquetTable.getSelectionModel().getSelectedItem();
@@ -168,6 +144,11 @@ public class FlowersSectionController {
             }
         });
     }
+
+    /**
+     * Оновлює елементи керування згідно з вибраним у таблиці квітом.
+     * @param selected вибрана квітка у букеті
+     */
     private void updateControlsForSelectedFlowerInBouquet(FlowerInBouquet selected) {
         Flower selectedFlower = selected.getFlower();
         FlowerType selectedType = selectedFlower.getType();
@@ -194,29 +175,11 @@ public class FlowersSectionController {
         });
     }
 
-    // Збережемо початковий список квітів для скидання фільтрації
-    private List<FlowerInBouquet> originalFlowersList;
     private void onSortByFreshness() {
         FlowersSortService.sortByFreshness(flowersInBouquet);
         logger.info("Застосовано сортування по свіжості");
     }
 
-
-    private void initializeData() {
-        try {
-            List<FlowerType> flowerTypes = flowerTypeDAO.findAll();
-            flowerTypeComboBox.setItems(FXCollections.observableArrayList(flowerTypes));
-            logger.info("Типи квітів завантажено: " + flowerTypes.size());
-            if (!flowerTypes.isEmpty()) {
-                flowerTypeComboBox.getSelectionModel().select(0);
-                onFlowerTypeSelected();
-            }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Помилка при завантаженні типів квітів", e);
-            ShowErrorUtil.showError("Помилка при завантаженні типів квітів: " , e.getMessage());
-        }
-    }
-    // Метод для пошуку по довжині стебла
     private void onFindByLength() {
         Double minLength = parseDoubleOrNull(minLengthField.getText());
         Double maxLength = parseDoubleOrNull(maxLengthField.getText());
@@ -230,15 +193,18 @@ public class FlowersSectionController {
         logger.info("Застосовано фільтр по довжині стебла. Кількість знайдених: " + filtered.size());
         flowersInBouquet.setAll(filtered);
     }
-    private FlowersFiltrService filtrService = new FlowersFiltrService();
-    // Метод для скидання фільтра
+
     private void onResetFilter() {
         minLengthField.clear();
         maxLengthField.clear();
         flowersInBouquet.setAll(originalFlowersList);
     }
 
-    // Допоміжний метод для парсингу Double з тексту, повертає null якщо не валідно
+    /**
+     * Парсить рядок у Double, повертає null, якщо парсинг неуспішний.
+     * @param text текст для парсингу
+     * @return число або null
+     */
     private Double parseDoubleOrNull(String text) {
         if (text == null || text.isBlank()) {
             return null;
@@ -249,6 +215,10 @@ public class FlowersSectionController {
             return null;
         }
     }
+
+    /**
+     * Обробляє подію вибору типу квітів у комбобоксі.
+     */
     private void onFlowerTypeSelected() {
         FlowerType selectedType = flowerTypeComboBox.getSelectionModel().getSelectedItem();
         if (selectedType == null) {
@@ -276,6 +246,9 @@ public class FlowersSectionController {
         flowerComboBox.setOnAction(e -> onFlowerSelected());
     }
 
+    /**
+     * Обробляє подію вибору квітки у комбобоксі.
+     */
     private void onFlowerSelected() {
         Flower selectedFlower = flowerComboBox.getSelectionModel().getSelectedItem();
         if (selectedFlower == null) {
@@ -316,7 +289,6 @@ public class FlowersSectionController {
             return;
         }
 
-        // Якщо є вибраний рядок — оновлюємо
         FlowerInBouquet selectedRow = flowersInBouquetTable.getSelectionModel().getSelectedItem();
         if (selectedRow != null && selectedRow.getFlower().getId() == selectedFlower.getId()) {
 
@@ -325,7 +297,7 @@ public class FlowersSectionController {
             flowersInBouquetTable.refresh();
             flowersInBouquetTable.getSelectionModel().clearSelection(); // скидаємо вибір
         } else {
-            // Створити новий запис
+
             Optional<FlowerInBouquet> existing = flowersInBouquet.stream()
                     .filter(fib -> fib.getFlower().getId() == selectedFlower.getId() && fib.getStemLength() == stemLength)
                     .findFirst();
@@ -351,7 +323,6 @@ public class FlowersSectionController {
         updateOriginalListSnapshot();
     }
 
-
     private void onRemoveFlower() {
         FlowerInBouquet selected = flowersInBouquetTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
@@ -369,7 +340,6 @@ public class FlowersSectionController {
         totalPriceLabel.setText(String.format("Загальна ціна: %.2f грн", total));
     }
 
-
     public ObservableList<FlowerInBouquet> getFlowersInBouquet() {
         return flowersInBouquet;
     }
@@ -379,7 +349,7 @@ public class FlowersSectionController {
         if (flowers != null) {
             flowersInBouquet.addAll(flowers);
         }
-        updateTotalPrice();  // додано
+        updateTotalPrice();
         updateOriginalListSnapshot();
     }
 

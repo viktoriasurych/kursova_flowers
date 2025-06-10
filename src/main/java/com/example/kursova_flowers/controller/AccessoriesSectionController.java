@@ -1,30 +1,24 @@
 package com.example.kursova_flowers.controller;
 
-import com.example.kursova_flowers.dao.AccessoryTypeDAO;
-import com.example.kursova_flowers.model.Box;
-import com.example.kursova_flowers.model.Ribbon;
-import com.example.kursova_flowers.model.AccessoryType;
-import com.example.kursova_flowers.model.Paper;
-import com.example.kursova_flowers.model.GreetingCard;
+import com.example.kursova_flowers.dao.*;
 import com.example.kursova_flowers.model.*;
-import com.example.kursova_flowers.util.ShowErrorUtil;
-import com.example.kursova_flowers.util.TableViewHelper;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import com.example.kursova_flowers.util.*;
+import javafx.collections.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
+import java.sql.*;
+import java.util.*;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class AccessoriesSectionController {
+
     private static final Logger logger = LoggerFactory.getLogger(AccessoriesSectionController.class);
+
     @FXML private ComboBox<AccessoryType> accessoryTypeComboBox;
     @FXML private Label extraFieldLabel;
     @FXML private TextField extraField;
@@ -64,6 +58,9 @@ public class AccessoriesSectionController {
     private final ObservableList<Box> boxes = FXCollections.observableArrayList();
     private final ObservableList<Ribbon> ribbons = FXCollections.observableArrayList();
     private final ObservableList<Paper> papers = FXCollections.observableArrayList();
+    private final  ObservableList<Accessory> all = FXCollections.observableArrayList();
+
+    private record FieldInfo(String label, String prompt) {}
 
     public void setConnection(Connection connection) {
         this.connection = connection;
@@ -90,6 +87,10 @@ public class AccessoriesSectionController {
 
     }
 
+    /**
+     * Налаштовує вибір рядків у таблицях аксесуарів,
+     * щоб синхронізувати форму з вибраним елементом.
+     */
     private void setupRowSelection() {
         setupSelectionListener(cardsTable,
                 GreetingCard::getText,
@@ -124,7 +125,6 @@ public class AccessoriesSectionController {
                 cardsTable, boxesTable, ribbonsTable);
     }
 
-
     private void setupTables() {
         TableViewHelper.setupReadOnlyTable(cardsTable, greetingCards, new TableViewHelper.ColumnConfig[] {
                 new TableViewHelper.ColumnConfig<>(cardTextColumn, GreetingCard::getText, String.class),
@@ -155,33 +155,9 @@ public class AccessoriesSectionController {
         });
     }
 
-
-
-    private <T> void setupSelectionListener(TableView<T> table,
-                                            Function<T, String> extraFieldValueGetter,
-                                            BiConsumer<AccessoryType, String> extraFieldUpdater,
-                                            Function<T, AccessoryType> typeGetter,
-                                            Function<T, String> colorGetter,
-                                            Function<T, String> noteGetter,
-                                            TableView<?>... othersToClear) {
-
-        table.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                AccessoryType type = typeGetter.apply(newVal);
-                accessoryTypeComboBox.setValue(type);
-                updateExtraFieldForType(type.getId());
-                extraField.setText(extraFieldValueGetter.apply(newVal));
-                colorField.setText(colorGetter.apply(newVal));
-                extraInfoArea.setText(noteGetter.apply(newVal));
-
-                for (TableView<?> other : othersToClear) {
-                    other.getSelectionModel().clearSelection();
-                }
-            }
-        });
-    }
-
-
+    /**
+     * Завантажує доступні типи аксесуарів з БД і встановлює їх у ComboBox.
+     */
     private void loadAccessoryTypes() {
         try {
             List<AccessoryType> types = accessoryTypeDao.findAll();
@@ -196,9 +172,7 @@ public class AccessoriesSectionController {
         }
     }
 
-    private record FieldInfo(String label, String prompt) {}
 
-    // 1. Структура для зберігання інформації про додаткове поле на основі типу
     private static final Map<Integer, FieldInfo> accessoryFieldInfoMap = Map.of(
             1, new FieldInfo("Текст листівки:", "Введіть текст"),
             2, new FieldInfo("Розмір коробки:", "Введіть розмір"),
@@ -206,6 +180,11 @@ public class AccessoriesSectionController {
             4, new FieldInfo("Матеріал паперу:", "Введіть матеріал")
     );
 
+    /**
+     * Оновлює підпис і вміст додаткового поля форми залежно від типу аксесуару.
+     *
+     * @param typeName ідентифікатор типу аксесуара
+     */
     private void updateExtraFieldForType(int typeName) {
         FieldInfo info = accessoryFieldInfoMap.getOrDefault(typeName,
                 new FieldInfo("Додаткове поле:", ""));
@@ -215,7 +194,7 @@ public class AccessoriesSectionController {
         extraField.clear();
     }
 
-      private void addAccessory() {
+    private void addAccessory() {
         AccessoryType type = accessoryTypeComboBox.getValue();
           if (type == null) {
               logger.warn("Спроба додати аксесуар з порожніми обов'язковими полями");
@@ -255,7 +234,6 @@ public class AccessoriesSectionController {
 
     }
 
-
     private void deleteSelectedAccessory() {
         AccessoryType selected = accessoryTypeComboBox.getValue();
 
@@ -274,13 +252,6 @@ public class AccessoriesSectionController {
         logger.info("Видалено аксесуар");
     }
 
-    private void clearForm() {
-        extraField.clear();
-        colorField.clear();
-        extraInfoArea.clear();
-    }
-
-
     public ObservableList<GreetingCard> getGreetingCards() {
         return greetingCards;
     }
@@ -296,16 +267,17 @@ public class AccessoriesSectionController {
     public ObservableList<Paper> getPapers() {
         return papers;
     }
-    ObservableList<Accessory> all = FXCollections.observableArrayList();
+
 
     public ObservableList<Accessory> getAllAccessories() {
-all.clear();
+        all.clear();
         all.addAll(boxes);
         all.addAll(ribbons);
         all.addAll(papers);
         all.addAll(greetingCards);
         return all;
     }
+
     public void setAccessories(ObservableList<Accessory> accessories) {
         greetingCards.clear();
         boxes.clear();
@@ -329,8 +301,47 @@ all.clear();
         }
     }
 
+    private void clearForm() {
+        extraField.clear();
+        colorField.clear();
+        extraInfoArea.clear();
+    }
 
+    /**
+     * Налаштовує вибір рядка таблиці аксесуарів.
+     * При виборі елемента синхронізує поля форми та очищає вибір інших таблиць.
+     *
+     * @param table таблиця аксесуарів
+     * @param extraFieldValueGetter функція для отримання значення додаткового поля
+     * @param extraFieldUpdater функція для оновлення додаткового поля
+     * @param typeGetter функція для отримання типу аксесуара
+     * @param colorGetter функція для отримання кольору аксесуара
+     * @param noteGetter функція для отримання примітки аксесуара
+     * @param othersToClear інші таблиці, вибір у яких треба очистити
+     * @param <T> тип аксесуара
+     */
+    private <T> void setupSelectionListener(TableView<T> table,
+                                            Function<T, String> extraFieldValueGetter,
+                                            BiConsumer<AccessoryType, String> extraFieldUpdater,
+                                            Function<T, AccessoryType> typeGetter,
+                                            Function<T, String> colorGetter,
+                                            Function<T, String> noteGetter,
+                                            TableView<?>... othersToClear) {
 
+        table.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                AccessoryType type = typeGetter.apply(newVal);
+                accessoryTypeComboBox.setValue(type);
+                updateExtraFieldForType(type.getId());
+                extraField.setText(extraFieldValueGetter.apply(newVal));
+                colorField.setText(colorGetter.apply(newVal));
+                extraInfoArea.setText(noteGetter.apply(newVal));
 
+                for (TableView<?> other : othersToClear) {
+                    other.getSelectionModel().clearSelection();
+                }
+            }
+        });
+    }
 
 }

@@ -1,8 +1,5 @@
 package com.example.kursova_flowers.dao;
 
-import com.example.kursova_flowers.model.Accessory;
-import com.example.kursova_flowers.model.AccessoryType;
-import com.example.kursova_flowers.model.Bouquet;
 import com.example.kursova_flowers.model.*;
 
 import java.sql.*;
@@ -121,7 +118,6 @@ public class AccessoryDAO {
         }
         return list;
     }
-
 
     public void deleteByBouquetId(int bouquetId) throws SQLException {
         String sql = "DELETE FROM accessory WHERE bouquet_id = ?";

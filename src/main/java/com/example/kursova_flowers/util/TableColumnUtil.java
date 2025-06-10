@@ -4,12 +4,16 @@ import com.example.kursova_flowers.controller.DatePickerTableCell;
 import javafx.beans.property.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.util.converter.DoubleStringConverter;
-import javafx.util.converter.IntegerStringConverter;
+import javafx.util.converter.*;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+
+/**
+ * Утилітний клас для налаштування стовпців {@link javafx.scene.control.TableColumn}
+ * у таблицях JavaFX. Дозволяє швидко зробити стовпці редагованими або лише для читання.
+ */
 public class TableColumnUtil {
 
     public static <T> void makeEditableStringColumn(TableColumn<T, String> column,
@@ -51,11 +55,13 @@ public class TableColumnUtil {
             setter.accept(e.getRowValue(), e.getNewValue());
         });
     }
+
     public static <T> void makeReadOnlyStringColumn(TableColumn<T, String> column,
                                                     Function<T, String> getter) {
         column.setCellValueFactory(data -> new SimpleStringProperty(getter.apply(data.getValue())));
         column.setEditable(false);
     }
+
     public static <T> void makeReadOnlyDoubleColumn(TableColumn<T, Double> column,
                                                     Function<T, Double> getter) {
         column.setCellValueFactory(data -> new SimpleDoubleProperty(getter.apply(data.getValue())).asObject());

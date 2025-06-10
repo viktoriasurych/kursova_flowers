@@ -13,10 +13,8 @@ public class BouquetCalculatorService {
         if (bouquet == null) {
             return 0;
         }
-
         double total = 0;
 
-        // Сума квітів (ціна * кількість)
         if (bouquet.getFlowers() != null) {
             for (FlowerInBouquet flowerInBouquet : bouquet.getFlowers()) {
                 Flower flower = flowerInBouquet.getFlower();
@@ -26,7 +24,6 @@ public class BouquetCalculatorService {
             }
         }
 
-        // Сума аксесуарів (беремо базову ціну аксесуара)
         if (bouquet.getAccessories() != null) {
             for (Accessory accessory : bouquet.getAccessories()) {
                 AccessoryType type = accessory.getType();

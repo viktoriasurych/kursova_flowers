@@ -5,6 +5,10 @@ import com.example.kursova_flowers.dao.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * Клас {@code DatabaseInitializer} відповідає за створення таблиць у базі даних.
+ */
+
 public class DatabaseInitializer {
     private final Connection connection;
 

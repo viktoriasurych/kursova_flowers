@@ -1,10 +1,8 @@
-// BouquetFormController.java
 package com.example.kursova_flowers.controller;
 
 import com.example.kursova_flowers.db.DBManager;
 import com.example.kursova_flowers.model.Bouquet;
-import com.example.kursova_flowers.util.SceneUtil;
-import com.example.kursova_flowers.util.Scenes;
+import com.example.kursova_flowers.util.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -17,19 +15,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BouquetFormController {
+
     private static final Logger LOGGER = Logger.getLogger(BouquetFormController.class.getName());
-    @FXML
-    private VBox leftPanel;
-    @FXML
-    private Button backButton;
-    @FXML
-    private TextField nameField;
 
-    @FXML
-    private BorderPane rightPanel;
-    java.sql.Connection connection; // маємо підключення до бази
+    @FXML private VBox leftPanel;
+    @FXML private Button backButton;
+    @FXML private TextField nameField;
 
-    // Зберігаємо посилання на завантажені вікна та контролери
+    @FXML private BorderPane rightPanel;
+
+    java.sql.Connection connection;
+
     private Node flowersSectionNode;
     private FlowersSectionController flowersSectionController;
 
@@ -39,18 +35,18 @@ public class BouquetFormController {
     private Node receiptSectionNode;
     private ReceiptSectionController receiptSectionController;
 
+    private Bouquet currentBouquet;
 
     @FXML
-   public void initialize() {
+    public void initialize() {
        try {
           connection = DBManager.getConnection();
            LOGGER.info("Ініціалізація BouquetFormController...");
-           // Попередньо завантажуємо всі сторінки та зберігаємо їх
+
            loadFlowersPage();
            loadAccessoriesPage();
            loadSummaryPage();
 
-           // Встановлюємо початкову сторінку
            showPage(flowersSectionNode);
 
        } catch (IOException e) {
@@ -59,7 +55,6 @@ public class BouquetFormController {
        }
    }
 
-    // Методи для перемикання сторінок
     private void loadFlowersPage() throws IOException {
         LOGGER.info("Завантаження сторінки квітів...");
         flowersSectionController = SceneUtil.loadSection(
@@ -78,6 +73,13 @@ public class BouquetFormController {
         );
     }
 
+    /**
+     * Завантажує FXML та контролер підсумкової сторінки (чек),
+     * ініціалізує зв'язки між контролерами,
+     * зв'язує поле введення назви букета.
+     *
+     * @throws IOException у разі помилки завантаження FXML
+     */
     private void loadSummaryPage() throws IOException {
         LOGGER.info("Завантаження підсумкової сторінки...");
         receiptSectionController = SceneUtil.loadSection(
@@ -107,10 +109,8 @@ public class BouquetFormController {
 
     @FXML
     private void showSummaryPage() {
-
         showPage(receiptSectionNode);
         receiptSectionController.refreshData();
-
     }
 
     @FXML
@@ -122,21 +122,27 @@ public class BouquetFormController {
         return nameField.getText();
     }
 
-    private Bouquet currentBouquet; // збережений букет для редагування
+
     public Bouquet getCurrentBouquet() {
         return currentBouquet;
     }
+
+    /**
+     * Встановлює букет для редагування у формі.
+     * Оновлює поле назви, заповнює квіти та аксесуари відповідних контролерів.
+     * Оновлює дані у підсумковій секції.
+     *
+     * @param bouquet букет для редагування, або null для очищення форми
+     */
     public void setBouquet(Bouquet bouquet) {
         this.currentBouquet = bouquet;
         if (bouquet != null) {
             LOGGER.info("Завантаження існуючого букету: " + bouquet.getName());
             nameField.setText(bouquet.getName());
 
-            // Передати список квітів і аксесуарів у відповідні контролери
             flowersSectionController.setFlowersInBouquet(FXCollections.observableArrayList(bouquet.getFlowers()));
             accessoriesSectionController.setAccessories(FXCollections.observableArrayList(bouquet.getAccessories()));
 
-            // Можливо, оновити сумарні дані у ReceiptSectionController, якщо він вже ініціалізований
             if (receiptSectionController != null) {
                 receiptSectionController.refreshData();
             }

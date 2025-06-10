@@ -21,7 +21,7 @@ public class AccessoryType {
 
     @Override
     public String toString() {
-        return name;  // щоб у ComboBox відображалась назва типу
+        return name;
     }
 
 }

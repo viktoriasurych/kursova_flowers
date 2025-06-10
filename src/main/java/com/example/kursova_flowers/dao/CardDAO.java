@@ -1,6 +1,6 @@
 package com.example.kursova_flowers.dao;
+
 import com.example.kursova_flowers.model.GreetingCard;
-import com.example.kursova_flowers.model.Paper;
 
 import java.sql.*;
 
@@ -25,7 +25,6 @@ public class CardDAO {
         }
     }
 
-    /** Вставляє новий запис і повертає об’єкт з оновленим id */
     public GreetingCard insert(GreetingCard card) throws SQLException {
         String sql = "INSERT INTO card (accessory_id, card_text) VALUES (?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -39,7 +38,6 @@ public class CardDAO {
         return card;
     }
 
-    /** Видаляє запис за власним id */
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM card WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {

@@ -1,9 +1,6 @@
 package com.example.kursova_flowers.dao;
 
-import com.example.kursova_flowers.model.FlowerInBouquet;
-import com.example.kursova_flowers.model.Flower;
-import com.example.kursova_flowers.model.Bouquet;
-import com.example.kursova_flowers.model.FlowerType;
+import com.example.kursova_flowers.model.*;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -80,7 +77,6 @@ public class FlowerInBouquetDAO {
                         flower.setPickedDate(LocalDate.parse(dateStr));
                     }
 
-                    // Створюємо і встановлюємо тип квітки
                     FlowerType type = new FlowerType();
                     type.setId(rs.getInt("type_id"));
                     type.setName(rs.getString("type_name"));
@@ -102,6 +98,7 @@ public class FlowerInBouquetDAO {
 
         return list;
     }
+
     public void deleteByBouquetId(int bouquetId) throws SQLException {
         String sql = "DELETE FROM flower_in_bouquet WHERE bouquet_id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {

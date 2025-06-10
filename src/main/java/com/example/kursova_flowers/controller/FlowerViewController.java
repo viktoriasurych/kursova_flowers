@@ -1,17 +1,11 @@
 package com.example.kursova_flowers.controller;
 
-import com.example.kursova_flowers.dao.FlowerDAO;
-import com.example.kursova_flowers.dao.FlowerTypeDAO;
+import com.example.kursova_flowers.dao.*;
 import com.example.kursova_flowers.db.DBManager;
-import com.example.kursova_flowers.model.Flower;
-import com.example.kursova_flowers.model.FlowerType;
-import com.example.kursova_flowers.util.SceneUtil;
-import com.example.kursova_flowers.util.Scenes;
-import com.example.kursova_flowers.util.ShowErrorUtil;
-import com.example.kursova_flowers.util.TableColumnUtil;
+import com.example.kursova_flowers.model.*;
+import com.example.kursova_flowers.util.*;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -23,43 +17,40 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FlowerViewController {
-    private static final Logger LOGGER = Logger.getLogger(FlowerViewController.class.getName());
-    @FXML
-    private ListView<FlowerType> flowerTypeList;
 
-    @FXML
-    private Button addButton;
+    private static final Logger LOGGER = Logger.getLogger(FlowerViewController.class.getName());
+
+    @FXML private ListView<FlowerType> flowerTypeList;
 
     @FXML private Label selectedTypeLabel;
     @FXML private Label flowerCountLabel;
+
     @FXML private TableView<Flower> flowerTable;
     @FXML private TableColumn<Flower, String> nameColumn;
     @FXML private TableColumn<Flower, Double> priceColumn;
     @FXML private TableColumn<Flower, LocalDate> dateColumn;
 
     @FXML private TextField newTypeField;
-
     @FXML private TextField nameField;
     @FXML private TextField priceField;
     @FXML private DatePicker datePicker;
     @FXML private Button updateButton;
     @FXML private Button deleteButton;
 
-    @FXML
-    private Button backToMainButton;
+    @FXML private Button addButton;
+    @FXML private Button backToMainButton;
+
+    private final ObservableList<FlowerType> flowerTypes = FXCollections.observableArrayList();
+    private final ObservableList<Flower> flowers = FXCollections.observableArrayList();
+
+    private FlowerTypeDAO flowerTypeDAO;
+    private FlowerDAO flowerDAO;
+    private FlowerType selectedType;
 
     @FXML
     private void handleOpenScene(ActionEvent event) {
         SceneUtil.openSceneFromButton(backToMainButton, Scenes.MAIN);
     }
-
-    private final ObservableList<FlowerType> flowerTypes = FXCollections.observableArrayList();
-
-    private FlowerTypeDAO flowerTypeDAO;
-    private final ObservableList<Flower> flowers = FXCollections.observableArrayList();
-    private FlowerDAO flowerDAO;
-    private FlowerType selectedType;
-
 
     public void initialize() {
         initializeDAOs();
@@ -67,7 +58,6 @@ public class FlowerViewController {
         initializeEventHandlers();
         setupEditableColumns();
         flowerTable.setItems(flowers);
-
     }
 
     private void initializeDAOs() {
@@ -83,6 +73,9 @@ public class FlowerViewController {
         }
     }
 
+    /**
+     * Ініціалізує список типів квітів у ListView.
+     */
     private void initializeFlowerTypeList() {
         flowerTypeList.setItems(flowerTypes);
         flowerTypeList.setCellFactory(param -> new ListCell<>() {
@@ -94,6 +87,9 @@ public class FlowerViewController {
         });
     }
 
+    /**
+     * Ініціалізує обробники подій для елементів керування.
+     */
     private void initializeEventHandlers() {
         addButton.setOnAction(e -> onAddFlowerType());
 
@@ -129,6 +125,11 @@ public class FlowerViewController {
         clearForm();
     }
 
+    /**
+     * Оновлює наявну квітку на основі даних з форми.
+     *
+     * @param selected квітка для оновлення
+     */
     private void updateExistingFlower(Flower selected) {
         updateFlowerFromForm(selected);
         try {
@@ -185,12 +186,22 @@ public class FlowerViewController {
         }
     }
 
+    /**
+     * Заповнює форму даними вибраної квітки.
+     *
+     * @param flower вибрана квітка
+     */
     private void fillForm(Flower flower) {
         nameField.setText(flower.getName());
         priceField.setText(String.valueOf(flower.getPrice()));
         datePicker.setValue(flower.getPickedDate());
     }
 
+    /**
+     * Оновлює об'єкт квітки значеннями з полів форми.
+     *
+     * @param flower квітка, яку потрібно оновити
+     */
     private void updateFlowerFromForm(Flower flower) {
         flower.setName(nameField.getText());
         try {
@@ -234,6 +245,11 @@ public class FlowerViewController {
         }
     }
 
+    /**
+     * Завантажує всі квіти обраного типу.
+     *
+     * @param type вибраний тип квітів
+     */
     private void loadFlowersByType(FlowerType type) {
         try {
             LOGGER.info("Завантаження квітів типу: " + type.getName());

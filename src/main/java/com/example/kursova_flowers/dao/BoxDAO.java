@@ -1,4 +1,5 @@
 package com.example.kursova_flowers.dao;
+
 import com.example.kursova_flowers.model.Box;
 
 import java.sql.*;
@@ -24,7 +25,6 @@ public class BoxDAO {
         }
     }
 
-    /** Вставляє новий запис і повертає об’єкт з оновленим id */
     public Box insert(Box box) throws SQLException {
         String sql = "INSERT INTO box (accessory_id, style) VALUES (?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -38,7 +38,6 @@ public class BoxDAO {
         return box;
     }
 
-    /** Видаляє запис за власним id */
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM box WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {

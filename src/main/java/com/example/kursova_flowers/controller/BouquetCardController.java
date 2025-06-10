@@ -2,8 +2,6 @@ package com.example.kursova_flowers.controller;
 
 import com.example.kursova_flowers.model.Bouquet;
 import com.example.kursova_flowers.util.ImageUtil;
-import com.example.kursova_flowers.util.SceneUtil;
-import com.example.kursova_flowers.util.Scenes;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,9 +11,10 @@ import javafx.scene.image.ImageView;
 import java.util.logging.Logger;
 
 public class BouquetCardController {
+
     private static final Logger LOGGER = Logger.getLogger(BouquetCardController.class.getName());
-    @FXML
-    private ImageView imageView;
+
+    @FXML private ImageView imageView;
     @FXML private Label nameLabel;
     @FXML private Label priceLabel;
     @FXML private Button infoButton;

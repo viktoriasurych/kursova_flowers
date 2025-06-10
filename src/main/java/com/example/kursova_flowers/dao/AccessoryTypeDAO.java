@@ -26,7 +26,6 @@ public class AccessoryTypeDAO {
         }
     }
 
-    // Отримати всі аксесуари з таблиці
     public List<AccessoryType> findAll() throws SQLException {
         List<AccessoryType> list = new ArrayList<>();
         String sql = "SELECT id, name, base_price FROM accessory_type ORDER BY id";
@@ -44,7 +43,6 @@ public class AccessoryTypeDAO {
         return list;
     }
 
-    // Оновити ціну аксесуара за id
     public void updateBasePrice(int id, double newPrice) throws SQLException {
         String sql = "UPDATE accessory_type SET base_price = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -54,7 +52,6 @@ public class AccessoryTypeDAO {
         }
     }
 
-    // Опційно: вставити початкові аксесуари, якщо таблиця порожня
     public void insertDefaultAccessoriesIfEmpty() throws SQLException {
         String checkSql = "SELECT COUNT(*) FROM accessory_type";
         try (Statement stmt = connection.createStatement();
@@ -74,23 +71,5 @@ public class AccessoryTypeDAO {
             }
         }
     }
-
-    public AccessoryType findByName(String name) throws SQLException {
-        String sql = "SELECT id, name, base_price FROM accessory_type WHERE LOWER(name) = LOWER(?) LIMIT 1";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, name);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return new AccessoryType(
-                            rs.getInt("id"),
-                            rs.getString("name"),
-                            rs.getDouble("base_price")
-                    );
-                }
-            }
-        }
-        return null;
-    }
-
 
 }

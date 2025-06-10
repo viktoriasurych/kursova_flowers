@@ -1,14 +1,11 @@
 package com.example.kursova_flowers.controller;
 
-import com.example.kursova_flowers.dao.BouquetDAO;
+import com.example.kursova_flowers.dao.*;
 import com.example.kursova_flowers.db.DBManager;
-import com.example.kursova_flowers.model.Bouquet;
-import com.example.kursova_flowers.util.SceneUtil;
-import com.example.kursova_flowers.service.BouquetCalculatorService;
-import com.example.kursova_flowers.util.Scenes;
+import com.example.kursova_flowers.model.*;
+import com.example.kursova_flowers.util.*;
+import com.example.kursova_flowers.service.*;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
@@ -20,11 +17,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BouquetsListController {
+
     private static final Logger logger = Logger.getLogger(BouquetFormController.class.getName());
-    @FXML
-    private FlowPane bouquetsContainer;
-    @FXML
-    private Button backButton;
+
+    @FXML private FlowPane bouquetsContainer;
+    @FXML private Button backButton;
 
     @FXML
     public void initialize() throws SQLException, IOException {
@@ -38,13 +35,13 @@ public class BouquetsListController {
         bouquetsContainer.getChildren().clear();
 
         for (Bouquet bouquet : bouquets) {
-            // Завантажуємо fxml + контролер + додаємо до контейнера через утиліту
+
             BouquetCardController controller = SceneUtil.loadSection( Scenes.CARDBOUQUET.getFxmlPath(),
                     ctrl -> {
                         double totalPrice = new BouquetCalculatorService().calculateTotalPrice(bouquet);
                         ctrl.setData(bouquet, totalPrice,
-                                () -> openEditBouquetForm(bouquet), // onEdit
-                                () -> deleteBouquet(bouquet)        // onDelete
+                                () -> openEditBouquetForm(bouquet),
+                                () -> deleteBouquet(bouquet)
                         );
                     },
                     node -> bouquetsContainer.getChildren().add(node)
@@ -73,7 +70,7 @@ public class BouquetsListController {
     private void deleteBouquet(Bouquet bouquet) {
         try {
             new BouquetDAO(DBManager.getConnection()).delete(bouquet.getId());
-            loadBouquets(); // оновити список після видалення
+            loadBouquets();
             logger.info("Букет видалено: " + bouquet.getName());
         } catch (Exception e) {
             e.printStackTrace();

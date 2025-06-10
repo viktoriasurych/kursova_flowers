@@ -1,12 +1,11 @@
 package com.example.kursova_flowers.controller;
 
-import com.example.kursova_flowers.util.SceneUtil;
-import com.example.kursova_flowers.util.Scenes;
+import com.example.kursova_flowers.util.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.stage.Stage;
 
 public class MainController {
+
     @FXML private Button createBtn;
     @FXML private Button bouquetsBtn;
     @FXML private Button flowersBtn;
@@ -22,8 +21,5 @@ public class MainController {
         accessorysBtn.setOnAction(e -> SceneUtil.openSceneFromButton(accessorysBtn, Scenes.ACCESSORY));
         exitBtn.setOnAction(e -> System.exit(0));
     }
-
-
-
 
 }

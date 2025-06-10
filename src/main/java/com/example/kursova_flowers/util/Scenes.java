@@ -1,5 +1,9 @@
 package com.example.kursova_flowers.util;
 
+/**
+ * Перелічення {@code Scenes} зберігає FXML-шляхи до вікон застосунку
+ * та їхні відповідні заголовки. Використовується для перемикання між сценами.
+ */
 public enum Scenes {
     MAIN("/com/example/kursova_flowers/app/main-view.fxml", "Cherrish"),
     FLOWER("/com/example/kursova_flowers/app/flower-view.fxml", "Квіти"),
@@ -12,7 +16,6 @@ public enum Scenes {
     SECTIONFLOWER("/com/example/kursova_flowers/app/flowers_section.fxml", "Секція квітів"),
     SECTIONACCESSORY("/com/example/kursova_flowers/app/accessory_section.fxml", "Секція аксесуарів"),
     SECTIONRECEIPT("/com/example/kursova_flowers/app/receipt-section.fxml", "Секція чеку");
-    // інші сцени...
 
     private final String fxmlPath;
     private final String title;
