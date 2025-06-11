@@ -11,7 +11,7 @@
 >
 
     <!-- Таблиці для 4 типів аксесуарів -->
-    <VBox spacing="10" prefHeight="600">
+    <VBox spacing="5" prefHeight="600">
 
         <Label text="Листівки:"/>
         <TableView fx:id="cardsTable" prefHeight="150" editable="false">
@@ -53,17 +53,25 @@
             </columns>
         </TableView>
 
+        <Region prefHeight="10"/>
     </VBox>
-
+    <Separator/>
     <!-- Форма додавання нового аксесуару -->
     <GridPane hgap="10" vgap="10">
+        <Region prefHeight="10"/>
         <columnConstraints>
             <ColumnConstraints percentWidth="30"/>
             <ColumnConstraints percentWidth="70"/>
         </columnConstraints>
 
         <Label text="Тип аксесуару:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-        <ComboBox fx:id="accessoryTypeComboBox" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+        <!-- ComboBox + кнопки в одному рядку -->
+        <HBox spacing="10" alignment="CENTER_LEFT" GridPane.rowIndex="0" GridPane.columnIndex="1">
+            <ComboBox fx:id="accessoryTypeComboBox" />
+            <Button text="Додати" fx:id="addButton"/>
+            <Button text="Видалити" fx:id="deleteButton"/>
+        </HBox>
 
         <Label fx:id="extraFieldLabel" text="Додаткове поле:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
         <TextField fx:id="extraField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
@@ -73,11 +81,7 @@
 
         <Label text="Додаткова інформація:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
         <TextArea fx:id="extraInfoArea" prefRowCount="3" GridPane.rowIndex="3" GridPane.columnIndex="1" />
-
-        <HBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="1" alignment="CENTER_LEFT">
-            <Button text="Додати" fx:id="addButton"/>
-            <Button text="Видалити" fx:id="deleteButton"/>
-        </HBox>
     </GridPane>
+
 
 </VBox>

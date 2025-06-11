@@ -16,14 +16,14 @@
 
     <!-- Лівий бортик -->
     <left>
-        <VBox fx:id="leftPane" prefWidth="250" style="-fx-background-color: #cccccc;">
+        <VBox fx:id="leftPane" prefWidth="200" style="-fx-background-color: #cccccc;">
             <Button fx:id="backToMainButton" onAction="#handleOpenScene" text="← Повернутись на головну" maxWidth="Infinity" style="-fx-font-size: 14px;"/>
         </VBox>
     </left>
 
     <!-- Правий простір для деталей -->
     <center>
-        <VBox fx:id="detailPane" style="-fx-background-color: #f0f0f0;">
+        <VBox spacing="10"  fx:id="detailPane" style="-fx-background-color: #f0f0f0; -fx-padding: 15;">
 
             <Label text="Типи аксесуарів" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
 
@@ -34,7 +34,6 @@
                     <TableColumn fx:id="saveColumn" text="" prefWidth="50"/>
                 </columns>
             </TableView>
-
 
         </VBox>
     </center>

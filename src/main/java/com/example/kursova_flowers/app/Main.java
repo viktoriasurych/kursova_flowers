@@ -7,6 +7,8 @@ import javafx.stage.Stage;
 import com.example.kursova_flowers.util.Scenes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.net.URL;
+
 
 public class Main extends Application {
 
@@ -14,6 +16,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+        URL resource = getClass().getResource("/com/example/kursova_flowers/img/back.png");
+        System.out.println(resource);
+
         logger.info("Запуск додатку. Ініціалізація бази даних...");
         try {
             DBManager.init();

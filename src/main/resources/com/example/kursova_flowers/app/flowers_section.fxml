@@ -7,11 +7,11 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.kursova_flowers.controller.FlowersSectionController"
       VBox.vgrow="ALWAYS"
-      prefWidth="600" prefHeight="400">
+      prefWidth="600" prefHeight="400" style="">
 
 
-    <HBox alignment="TOP_RIGHT" spacing="10">
-        <Button fx:id="sortByFreshnessButton" text="Сортувати за свіжістю"/>
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+
 
         <Label text="Довжина стебла від:"/>
         <TextField fx:id="minLengthField" promptText="мін." maxWidth="60"/>
@@ -20,9 +20,11 @@
         <TextField fx:id="maxLengthField" promptText="макс." maxWidth="60"/>
 
         <Button fx:id="findByLengthButton" text="Знайти"/>
+        <Button fx:id="sortByFreshnessButton" text="Сортувати за свіжістю"/>
         <Button fx:id="resetFilterButton" text="Скинути"/>
     </HBox>
 
+    <Region prefHeight="10"/>
 
     <!-- ВЕРХНІЙ СЕКТОР: таблиця квітів + загальна ціна -->
     <VBox spacing="5" VBox.vgrow="ALWAYS">

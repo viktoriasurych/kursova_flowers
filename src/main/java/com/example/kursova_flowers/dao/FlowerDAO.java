@@ -54,13 +54,13 @@ public class FlowerDAO {
     }
 
     public void insert(Flower flower) throws SQLException {
-        String sql = "INSERT INTO flower (name, price, picked_date, type_id) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO flower (name, price, picked_date, type_id) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, flower.getName());
             stmt.setDouble(2, flower.getPrice());
-            stmt.setString(4, flower.getPickedDate().toString()); // формат yyyy-MM-dd
+            stmt.setString(3, flower.getPickedDate().toString()); // формат yyyy-MM-dd
 
-            stmt.setInt(5, flower.getType().getId());
+            stmt.setInt(4, flower.getType().getId());
 
             stmt.executeUpdate();
 
@@ -76,9 +76,9 @@ public class FlowerDAO {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, flower.getName());
             stmt.setDouble(2, flower.getPrice());
-            stmt.setString(4, flower.getPickedDate().toString());
+            stmt.setString(3, flower.getPickedDate().toString());
 
-            stmt.setInt(5, flower.getId());
+            stmt.setInt(4, flower.getId());
 
             stmt.executeUpdate();
         }

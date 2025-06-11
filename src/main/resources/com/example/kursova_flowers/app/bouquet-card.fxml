@@ -9,17 +9,25 @@
 <?import javafx.scene.image.ImageView?>
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.kursova_flowers.controller.BouquetCardController"
-      spacing="10" alignment="CENTER" style="-fx-padding: 10; -fx-background-color: #f2f2f2; -fx-border-radius: 10; -fx-background-radius: 10;"
+      spacing="10" alignment="CENTER"
+      style="-fx-padding: 10; -fx-background-color: #e0e0e0; -fx-border-radius: 10;"
       prefWidth="150">
 
-    <ImageView fx:id="imageView" fitWidth="120" fitHeight="120" preserveRatio="true"/>
+    <!-- Квадратний контейнер для фото без заокруглень -->
+    <StackPane prefWidth="120" prefHeight="120" maxWidth="120" maxHeight="120"
+               style="-fx-background-color: white;">
+        <ImageView fx:id="imageView" fitWidth="120" fitHeight="120" preserveRatio="true" smooth="true"/>
+    </StackPane>
 
     <Label fx:id="nameLabel" style="-fx-font-weight: bold; -fx-font-size: 14;" wrapText="true"/>
 
     <Label fx:id="priceLabel" style="-fx-text-fill: #555;"/>
 
-    <HBox spacing="10" alignment="CENTER">
-        <Button text="i" fx:id="infoButton" onAction="#onInfo"/>
-        <Button text="✖" fx:id="deleteButton" onAction="#onDelete"/>
+    <!-- Кнопки по краях, без заокруглень -->
+    <HBox spacing="10" alignment="CENTER" style="-fx-padding: 0; -fx-pref-width: 100%;">
+        <Button text="i" fx:id="infoButton" onAction="#onInfo" style="-fx-pref-width: 40; -fx-background-radius: 0;"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Button text="✖" fx:id="deleteButton" onAction="#onDelete" style="-fx-pref-width: 40; -fx-background-radius: 0;"/>
     </HBox>
 </VBox>
+

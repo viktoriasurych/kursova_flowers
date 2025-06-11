@@ -11,16 +11,19 @@
 
     <!-- Ліва панель -->
     <left>
-        <VBox spacing="10" alignment="TOP_CENTER" style="-fx-padding: 10;">
-            <Button fx:id="backButton" text="⬅ Повернутись на головну" onAction="#onBackToHome"/>
+        <VBox spacing="6" prefWidth="200"  style="-fx-background-color: #cccccc;">
+            <Button fx:id="backButton" maxWidth="Infinity"  text="← Повернутись на головну" onAction="#onBackToHome" style="-fx-font-size: 14px;"/>
         </VBox>
     </left>
 
     <!-- Центр -->
     <center>
-        <ScrollPane fitToWidth="true">
-            <FlowPane fx:id="bouquetsContainer" hgap="20" vgap="20"
-                      prefWrapLength="600" />
-        </ScrollPane>
+        <VBox style="-fx-padding: 10;">
+            <ScrollPane fitToWidth="true">
+                <FlowPane fx:id="bouquetsContainer" hgap="20" vgap="20"
+                          prefWrapLength="700" />
+            </ScrollPane>
+        </VBox>
     </center>
+
 </BorderPane>

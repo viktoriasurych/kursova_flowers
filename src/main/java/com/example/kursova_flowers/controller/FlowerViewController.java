@@ -161,7 +161,6 @@ public class FlowerViewController {
         try {
             flowerDAO.insert(newFlower);
             loadFlowersByType(selectedType);
-            flowerTable.getSelectionModel().selectLast();
         } catch (SQLException ex) {
             ShowErrorUtil.showError("Помилка додавання квітки", ex.getMessage());
         }

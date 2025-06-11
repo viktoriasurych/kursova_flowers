@@ -8,29 +8,29 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.kursova_flowers.controller.MainController">
+    <!-- Ліва частина (50% ширини) -->
     <left>
-        <StackPane prefWidth="400" style="-fx-background-color: #e0e0e0;">
-            <ImageView fx:id="bgImage" fitWidth="400" preserveRatio="true">
-                <image>
-                    <!-- Встав картинку у resources/images/bg.jpg і в контроллері задай її -->
-                </image>
-            </ImageView>
-            <VBox alignment="CENTER" spacing="10">
+        <StackPane prefWidth="500" prefHeight="600" style="-fx-background-color: #e0e0e0;" >
+
+
+            <VBox alignment="CENTER" spacing="15">
                 <Label text="CHERRISH" styleClass="title"/>
-                <Label text="квіти, які леліять" styleClass="subtitle"/>
                 <Label text="-" styleClass="separator"/>
-                <Label text="магазин квітів" styleClass="subtitle"/>
+                <Label text="Настільний застосунок для підтримки діяльності флориста" styleClass="subtitle"/>
             </VBox>
         </StackPane>
+
     </left>
 
+
+    <!-- Права частина (50% ширини) -->
     <center>
         <VBox alignment="CENTER" spacing="20" style="-fx-padding: 60;">
-            <Button text="створити" fx:id="createBtn" styleClass="menu-button"/>
-            <Button text="букети" fx:id="bouquetsBtn" styleClass="menu-button"/>
-            <Button text="квіти" fx:id="flowersBtn" styleClass="menu-button"/>
-            <Button text="аксесуари" fx:id="accessorysBtn" styleClass="menu-button"/>
-            <Button text="вихід" fx:id="exitBtn" styleClass="menu-button"/>
+            <Button text="зібрати букет" fx:id="createBtn" styleClass="menu-button"/>
+            <Button text="список букетів" fx:id="bouquetsBtn" styleClass="menu-button"/>
+            <Button text="список квітів" fx:id="flowersBtn" styleClass="menu-button"/>
+            <Button text="доступні аксесуари" fx:id="accessorysBtn" styleClass="menu-button"/>
+            <Button text="завершити" fx:id="exitBtn" styleClass="menu-button"/>
         </VBox>
     </center>
 </BorderPane>

@@ -17,19 +17,24 @@
 <?import javafx.scene.control.TextField?>
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.kursova_flowers.controller.BouquetFormController">
     <left>
-        <VBox fx:id="leftPanel" spacing="10"  prefWidth="200" alignment="TOP_LEFT">
-            <Button fx:id="backButton" text="← Назад" onAction="#goBack" />
-            <Label text="Назва букету:" />
+        <VBox fx:id="leftPanel" spacing="10" prefWidth="200" alignment="TOP_LEFT" style="-fx-background-color: #cccccc;">
+            <Button fx:id="backButton" text="← Повернутись на головну" onAction="#goBack" maxWidth="Infinity" style="-fx-font-size: 14px;"/>
+            <Label text="Назва букету:" style="-fx-padding: 0 0 0 10;" />
             <TextField fx:id="nameField" promptText="Введіть назву..." />
             <Separator />
-            <Label text="Сторінки:" />
-            <Button fx:id="flowersPageButton" text="1. Квіти" onAction="#showFlowersPage" />
-            <Button fx:id="accessoriesPageButton" text="2. Аксесуари" onAction="#showAccessoriesPage" />
-            <Button fx:id="summaryPageButton" text="3. Чек" onAction="#showSummaryPage" />
+            <Label text="Сторінки:" style="-fx-padding: 0 0 0 10;" />
+
+            <!-- Обгорнемо кнопки у VBox без spacing -->
+            <VBox spacing="0" maxWidth="Infinity">
+                <Button fx:id="flowersPageButton" text="Квіти" onAction="#showFlowersPage" maxWidth="Infinity" style="-fx-font-size: 14px;"/>
+                <Button fx:id="accessoriesPageButton" text="Аксесуари" onAction="#showAccessoriesPage" maxWidth="Infinity" style="-fx-font-size: 14px" />
+                <Button fx:id="summaryPageButton" text="Чек" onAction="#showSummaryPage" maxWidth="Infinity" style="-fx-font-size: 14px" />
+            </VBox>
         </VBox>
+
     </left>
 
     <center>
-        <BorderPane fx:id="rightPanel" VBox.vgrow="ALWAYS" />
+        <BorderPane fx:id="rightPanel" VBox.vgrow="ALWAYS" style="-fx-padding: 10;"/>
     </center>
 </BorderPane>
