@@ -11,7 +11,7 @@ public class ShowErrorUtil {
         alert.showAndWait();
     }
 
-    private void showAlert(String title, String msg, Alert.AlertType type) {
+    public static void showAlert(String title, String msg, Alert.AlertType type) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);

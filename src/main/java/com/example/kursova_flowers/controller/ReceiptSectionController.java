@@ -328,7 +328,7 @@ public class ReceiptSectionController {
             }
 
             connection.commit();
-            ShowErrorUtil.showError("Успіх", "Букет успішно збережено!");
+            ShowErrorUtil.showAlert("Успіх", "Букет успішно збережено!", Alert.AlertType.INFORMATION);
 
             logger.info("Букет успішно збережено");
             SceneUtil.openSceneFromButton(saveButton, Scenes.BOUQUET);

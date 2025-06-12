@@ -97,6 +97,12 @@
             <artifactId>jakarta.mail</artifactId> <!-- або javax.mail, залежно від версії -->
             <version>2.0.1</version> <!-- або інша актуальна -->
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.5.0</version> <!-- або найновішу доступну -->
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -132,6 +138,19 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.8</version>
+                <configuration>
+                    <excludes>
+                        <exclude>com/example/ui/**</exclude>
+                        <exclude>**/*Controller.class</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 </project>

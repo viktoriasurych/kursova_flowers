@@ -254,7 +254,7 @@ public class FlowerViewController {
             LOGGER.info("Завантаження квітів типу: " + type.getName());
 
             flowers.setAll(flowerDAO.findByType(type));
-            flowerCountLabel.setText("(" + flowers.size() + " квіток)");
+            flowerCountLabel.setText("(" + flowers.size() + " шт.)");
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Помилка завантаження квітів", e);
             ShowErrorUtil.showError("Помилка завантаження квітів", e.getMessage());

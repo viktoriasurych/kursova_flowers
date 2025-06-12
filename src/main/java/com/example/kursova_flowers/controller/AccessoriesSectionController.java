@@ -185,7 +185,7 @@ public class AccessoriesSectionController {
      *
      * @param typeName ідентифікатор типу аксесуара
      */
-    private void updateExtraFieldForType(int typeName) {
+    void updateExtraFieldForType(int typeName) {
         FieldInfo info = accessoryFieldInfoMap.getOrDefault(typeName,
                 new FieldInfo("Додаткове поле:", ""));
 
@@ -194,7 +194,7 @@ public class AccessoriesSectionController {
         extraField.clear();
     }
 
-    private void addAccessory() {
+    void addAccessory() {
         AccessoryType type = accessoryTypeComboBox.getValue();
           if (type == null) {
               logger.warn("Спроба додати аксесуар з порожніми обов'язковими полями");
@@ -234,7 +234,7 @@ public class AccessoriesSectionController {
 
     }
 
-    private void deleteSelectedAccessory() {
+    void deleteSelectedAccessory() {
         AccessoryType selected = accessoryTypeComboBox.getValue();
 
         if (selected == null) {
