@@ -69,7 +69,7 @@ public class FlowerViewController {
             loadFlowerTypes();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Помилка ініціалізації DAO", e);
-            ShowErrorUtil.showError("Помилка ініціалізації DAO", e.getMessage());
+            ShowErrorUtil.showAlert("Помилка ініціалізації DAO", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -144,13 +144,13 @@ public class FlowerViewController {
             flowerTable.getSelectionModel().select(selected);
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Помилка збереження квітки", ex);
-            ShowErrorUtil.showError("Помилка збереження", ex.getMessage());
+            ShowErrorUtil.showAlert("Помилка збереження", ex.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
     private void addNewFlower() {
         if (selectedType == null) { LOGGER.warning("Спроба додати квітку без вибраного типу");
-            ShowErrorUtil.showError("Не обрано тип квітки", "Будь ласка, виберіть тип квітки зліва.");
+            ShowErrorUtil.showAlert("Не обрано тип квітки", "Будь ласка, виберіть тип квітки зліва.", Alert.AlertType.ERROR);
             return;
         }
 
@@ -162,7 +162,7 @@ public class FlowerViewController {
             flowerDAO.insert(newFlower);
             loadFlowersByType(selectedType);
         } catch (SQLException ex) {
-            ShowErrorUtil.showError("Помилка додавання квітки", ex.getMessage());
+            ShowErrorUtil.showAlert("Помилка додавання квітки", ex.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -179,7 +179,7 @@ public class FlowerViewController {
                     clearForm();
                 } catch (SQLException ex) {
                     LOGGER.log(Level.SEVERE, "Помилка видалення квітки", ex);
-                    ShowErrorUtil.showError("Помилка видалення", ex.getMessage());
+                    ShowErrorUtil.showAlert("Помилка видалення", ex.getMessage(), Alert.AlertType.ERROR);
                 }
             }
         }
@@ -223,14 +223,14 @@ public class FlowerViewController {
             }
 
         } catch (SQLException e) {
-            ShowErrorUtil.showError("Помилка завантаження типів квітів", e.getMessage());
+            ShowErrorUtil.showAlert("Помилка завантаження типів квітів", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
     private void onAddFlowerType() {
         String name = newTypeField.getText().trim();
         if (name.isEmpty()) {
-            ShowErrorUtil.showError("Помилка", "Назва не може бути пустою");
+            ShowErrorUtil.showAlert("Помилка", "Назва не може бути пустою", Alert.AlertType.ERROR);
             return;
         }
 
@@ -240,7 +240,7 @@ public class FlowerViewController {
             loadFlowerTypes();
             newTypeField.clear(); // очистити після додавання
         } catch (SQLException ex) {
-            ShowErrorUtil.showError("Помилка додавання", ex.getMessage());
+            ShowErrorUtil.showAlert("Помилка додавання", ex.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -257,7 +257,7 @@ public class FlowerViewController {
             flowerCountLabel.setText("(" + flowers.size() + " шт.)");
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Помилка завантаження квітів", e);
-            ShowErrorUtil.showError("Помилка завантаження квітів", e.getMessage());
+            ShowErrorUtil.showAlert("Помилка завантаження квітів", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 

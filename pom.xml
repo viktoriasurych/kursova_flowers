@@ -103,6 +103,14 @@
             <version>5.5.0</version> <!-- або найновішу доступну -->
             <scope>test</scope>
         </dependency>
+        <!-- TestFX core для JUnit5 -->
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-junit5</artifactId>
+            <version>4.0.16-alpha</version>
+            <scope>test</scope>
+        </dependency>
+
 
     </dependencies>
 

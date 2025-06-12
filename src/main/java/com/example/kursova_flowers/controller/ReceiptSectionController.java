@@ -252,7 +252,7 @@ public class ReceiptSectionController {
         try {
             Bouquet bouquet = bouquetFormController.getCurrentBouquet();
             if (bouquet == null) {
-                ShowErrorUtil.showError("Помилка", "Немає букета для друку.");
+                ShowErrorUtil.showAlert("Помилка", "Немає букета для друку.", Alert.AlertType.ERROR);
                 return;
             }
 
@@ -260,10 +260,10 @@ public class ReceiptSectionController {
             ReceiptPdfService pdfService = new ReceiptPdfService();
             pdfService.generatePdfReceipt(bouquet, filePath);
             logger.info("Друк букета завершено успішно");
-            ShowErrorUtil.showError("Успіх", "Чек збережено у файлі: " + filePath);
+            ShowErrorUtil.showAlert("Успіх", "Чек збережено у файлі: " + filePath, Alert.AlertType.ERROR);
         } catch (Exception e) {
             e.printStackTrace();
-            ShowErrorUtil.showError("Помилка", "Не вдалося створити PDF.");
+            ShowErrorUtil.showAlert("Помилка", "Не вдалося створити PDF.", Alert.AlertType.ERROR);
             logger.error("Помилка під час друку букета", e);
         }
     }
@@ -279,7 +279,7 @@ public class ReceiptSectionController {
 
             String name = bouquetFormController.getBouquetName();
             if (name == null || name.isBlank()) {
-                ShowErrorUtil.showError("Помилка", "Назва букета не може бути порожньою.");
+                ShowErrorUtil.showAlert("Помилка", "Назва букета не може бути порожньою.", Alert.AlertType.ERROR);
                 return;
             }
 
@@ -342,7 +342,7 @@ public class ReceiptSectionController {
                 ex.printStackTrace();
             }
             logger.error("Помилка під час збереження букета", e);
-            ShowErrorUtil.showError("Помилка", "Не вдалося зберегти букет.");
+            ShowErrorUtil.showAlert("Помилка", "Не вдалося зберегти букет.", Alert.AlertType.ERROR);
         } finally {
             try {
                 connection.setAutoCommit(true);

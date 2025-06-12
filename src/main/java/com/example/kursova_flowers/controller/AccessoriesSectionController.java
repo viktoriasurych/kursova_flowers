@@ -206,7 +206,7 @@ public class AccessoriesSectionController {
         String note = extraInfoArea.getText();
 
         if (extra.isBlank() || color.isBlank()) {
-            ShowErrorUtil.showError("Помилка", "Усі поля мають бути заповнені");
+            ShowErrorUtil.showAlert("Помилка", "Усі поля мають бути заповнені", Alert.AlertType.ERROR);
             return;
         }
 
@@ -221,7 +221,7 @@ public class AccessoriesSectionController {
                     papers.add(new Paper(type, color, note, extra));
                 default -> {
                     logger.error("Невідомий тип аксесуару: {}", type.getId());
-                    ShowErrorUtil.showError("Помилка", "Невідомий тип аксесуару");
+                    ShowErrorUtil.showAlert("Помилка", "Невідомий тип аксесуару", Alert.AlertType.ERROR);
                     return;
                 }
             }
@@ -229,7 +229,7 @@ public class AccessoriesSectionController {
                     type.getName(), extra, color, note);
             clearForm();
         } catch (NumberFormatException e) {
-            ShowErrorUtil.showError("Помилка", "Ширина стрічки має бути числом");
+            ShowErrorUtil.showAlert("Помилка", "Ширина стрічки має бути числом", Alert.AlertType.ERROR);
         }
 
     }

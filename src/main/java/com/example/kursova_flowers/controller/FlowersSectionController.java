@@ -93,7 +93,7 @@ public class FlowersSectionController {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Помилка при завантаженні типів квітів", e);
-            ShowErrorUtil.showError("Помилка при завантаженні типів квітів: " , e.getMessage());
+            ShowErrorUtil.showAlert("Помилка при завантаженні типів квітів: " , e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -170,7 +170,7 @@ public class FlowersSectionController {
                 stemLengthField.setText(String.valueOf(selected.getStemLength()));
 
             } catch (SQLException e) {
-                ShowErrorUtil.showError("Помилка при оновленні даних для редагування: ", e.getMessage());
+                ShowErrorUtil.showAlert("Помилка при оновленні даних для редагування: ", e.getMessage(), Alert.AlertType.ERROR);
             }
         });
     }
@@ -185,7 +185,7 @@ public class FlowersSectionController {
         Double maxLength = parseDoubleOrNull(maxLengthField.getText());
 
         if (minLength != null && maxLength != null && minLength > maxLength) {
-            ShowErrorUtil.showError("помилка","Мінімальна довжина не може бути більшою за максимальну.");
+            ShowErrorUtil.showAlert("помилка","Мінімальна довжина не може бути більшою за максимальну.", Alert.AlertType.ERROR);
             return;
         }
 
@@ -240,7 +240,7 @@ public class FlowersSectionController {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Помилка при завантаженні квіток", e);
-            ShowErrorUtil.showError("Помилка при завантаженні квіток: " , e.getMessage());
+            ShowErrorUtil.showAlert("Помилка при завантаженні квіток: " , e.getMessage(), Alert.AlertType.ERROR);
         }
 
         flowerComboBox.setOnAction(e -> onFlowerSelected());
@@ -263,14 +263,14 @@ public class FlowersSectionController {
     private void onAddFlower() {
         Flower selectedFlower = flowerComboBox.getSelectionModel().getSelectedItem();
         if (selectedFlower == null) {
-            ShowErrorUtil.showError("помилка", "Виберіть квітку.");
+            ShowErrorUtil.showAlert("помилка", "Виберіть квітку.", Alert.AlertType.ERROR);
             logger.warning("Спроба додати квітку без вибору.");
             return;
         }
 
         int quantity = quantitySpinner.getValue();
         if (quantity <= 0) {
-            ShowErrorUtil.showError("помилка", "Кількість має бути більшою за 0.");
+            ShowErrorUtil.showAlert("помилка", "Кількість має бути більшою за 0.", Alert.AlertType.ERROR);
             logger.warning("Невірна кількість при додаванні квітки: " + quantity);
             return;
         }
@@ -280,11 +280,11 @@ public class FlowersSectionController {
             stemLength = Double.parseDouble(stemLengthField.getText());
             if (stemLength <= 0) {
                 logger.warning("Невірна довжина стебла при додаванні квітки: " + stemLengthField.getText());
-                ShowErrorUtil.showError("помилка", "Довжина стебла має бути більшою за 0.");
+                ShowErrorUtil.showAlert("помилка", "Довжина стебла має бути більшою за 0.", Alert.AlertType.ERROR);
                 return;
             }
         } catch (NumberFormatException e) {
-            ShowErrorUtil.showError("помилка", "Неправильне значення довжини стебла.");
+            ShowErrorUtil.showAlert("помилка", "Неправильне значення довжини стебла.", Alert.AlertType.ERROR);
             logger.warning("Помилка парсингу довжини стебла: " + stemLengthField.getText());
             return;
         }
@@ -326,7 +326,7 @@ public class FlowersSectionController {
     private void onRemoveFlower() {
         FlowerInBouquet selected = flowersInBouquetTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            ShowErrorUtil.showError("Виберіть квітку в таблиці для видалення.", null);
+            ShowErrorUtil.showAlert("помилка", "Виберіть квітку в таблиці для видалення.", Alert.AlertType.ERROR);
             return;
         }
         flowersInBouquet.remove(selected);

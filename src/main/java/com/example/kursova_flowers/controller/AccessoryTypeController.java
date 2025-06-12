@@ -47,7 +47,7 @@ public class AccessoryTypeController {
             LOGGER.info("Аксесуари успішно завантажено.");
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Помилка ініціалізації DAO", e);
-            ShowErrorUtil.showError("Помилка ініціалізації DAO", e.getMessage());
+            ShowErrorUtil.showAlert("Помилка ініціалізації DAO", e.getMessage(), Alert.AlertType.ERROR);
         }
         setupTable();
     }
@@ -60,7 +60,7 @@ public class AccessoryTypeController {
             LOGGER.info("Аксесуари завантажено: " + accessories.size());
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Помилка завантаження аксесуарів", e);
-            ShowErrorUtil.showError("Помилка завантаження аксесуарів", e.getMessage());
+            ShowErrorUtil.showAlert("Помилка завантаження аксесуарів", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -81,7 +81,7 @@ public class AccessoryTypeController {
                 loadAccessories();
             } catch (SQLException ex) {
                 LOGGER.log(Level.SEVERE, "Помилка збереження аксесуара", ex);
-                ShowErrorUtil.showError("Помилка збереження", ex.getMessage());
+                ShowErrorUtil.showAlert("Помилка збереження", ex.getMessage(), Alert.AlertType.ERROR);
             }
         });
     }
