@@ -268,7 +268,6 @@ public class AccessoriesSectionController {
         return papers;
     }
 
-
     public ObservableList<Accessory> getAllAccessories() {
         all.clear();
         all.addAll(boxes);

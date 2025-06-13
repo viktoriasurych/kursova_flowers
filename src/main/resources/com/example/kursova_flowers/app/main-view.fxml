@@ -8,7 +8,7 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.kursova_flowers.controller.MainController">
-    <!-- Ліва частина (50% ширини) -->
+
     <left>
         <StackPane prefWidth="500" prefHeight="600" style="-fx-background-color: #e0e0e0;" >
 
@@ -23,7 +23,6 @@
     </left>
 
 
-    <!-- Права частина (50% ширини) -->
     <center>
         <VBox alignment="CENTER" spacing="20" style="-fx-padding: 60;">
             <Button text="зібрати букет" fx:id="createBtn" styleClass="menu-button"/>

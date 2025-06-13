@@ -10,7 +10,6 @@
 
     <VBox spacing="10" AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" style="-fx-padding: 10;">
 
-    <!-- ПРОКРУЧУВАНА СЕКЦІЯ -->
     <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
         <VBox spacing="10" prefWidth="Infinity" style="-fx-padding: 5;">
             <!-- Назва -->

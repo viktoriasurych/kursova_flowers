@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class ImageUtil {
     private static final Random random = new Random();
-    private static int maxImages = 10;
+    private static int maxImages = 15;
 
     /**
      * Повертає Image з випадковим фото з ресурсу /img/fw/fw-<number>.png,

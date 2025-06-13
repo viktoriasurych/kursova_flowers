@@ -9,7 +9,6 @@
       fx:controller="com.example.kursova_flowers.controller.AccessoriesSectionController"
 
 >
-
     <!-- Таблиці для 4 типів аксесуарів -->
     <VBox spacing="5" prefHeight="600">
 
@@ -66,7 +65,7 @@
 
         <Label text="Тип аксесуару:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
 
-        <!-- ComboBox + кнопки в одному рядку -->
+
         <HBox spacing="10" alignment="CENTER_LEFT" GridPane.rowIndex="0" GridPane.columnIndex="1">
             <ComboBox fx:id="accessoryTypeComboBox" />
 

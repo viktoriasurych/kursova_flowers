@@ -6,17 +6,11 @@ import javafx.scene.control.Button;
 
 public class MainController {
 
-    @FXML
-    Button createBtn;
-    @FXML
-    Button bouquetsBtn;
-    @FXML
-    Button flowersBtn;
-    @FXML
-    Button accessorysBtn;
-    @FXML
-    Button exitBtn;
-
+    @FXML Button createBtn;
+    @FXML Button bouquetsBtn;
+    @FXML Button flowersBtn;
+    @FXML Button accessorysBtn;
+    @FXML Button exitBtn;
 
     @FXML
     public void initialize() {

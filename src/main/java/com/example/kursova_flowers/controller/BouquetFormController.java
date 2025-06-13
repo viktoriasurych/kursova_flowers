@@ -122,7 +122,6 @@ public class BouquetFormController {
         return nameField.getText();
     }
 
-
     public Bouquet getCurrentBouquet() {
         return currentBouquet;
     }

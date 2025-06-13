@@ -24,7 +24,6 @@
             <Separator />
             <Label text="Сторінки:" style="-fx-padding: 0 0 0 10;" />
 
-            <!-- Обгорнемо кнопки у VBox без spacing -->
             <VBox spacing="0" maxWidth="Infinity">
                 <Button fx:id="flowersPageButton" text="Квіти" onAction="#showFlowersPage" maxWidth="Infinity" style="-fx-font-size: 14px;"/>
                 <Button fx:id="accessoriesPageButton" text="Аксесуари" onAction="#showAccessoriesPage" maxWidth="Infinity" style="-fx-font-size: 14px" />

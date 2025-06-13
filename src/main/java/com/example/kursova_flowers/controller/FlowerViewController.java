@@ -63,7 +63,7 @@ public class FlowerViewController {
     private void initializeDAOs() {
         try {
             LOGGER.info("Ініціалізація DAO");
-            Connection connection = DBManager.getConnection(); // Отримуємо єдине підключення
+            Connection connection = DBManager.getConnection();
             flowerTypeDAO = new FlowerTypeDAO(connection);
             flowerDAO = new FlowerDAO(connection);
             loadFlowerTypes();
