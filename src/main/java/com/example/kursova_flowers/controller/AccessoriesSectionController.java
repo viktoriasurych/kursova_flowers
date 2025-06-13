@@ -92,6 +92,7 @@ public class AccessoriesSectionController {
      * щоб синхронізувати форму з вибраним елементом.
      */
     private void setupRowSelection() {
+
         setupSelectionListener(cardsTable,
                 GreetingCard::getText,
                 (type, value) -> extraField.setText(value),
@@ -164,7 +165,7 @@ public class AccessoriesSectionController {
             accessoryTypeComboBox.setItems(FXCollections.observableArrayList(types));
             if (!types.isEmpty()) {
                 accessoryTypeComboBox.getSelectionModel().selectFirst();
-                updateExtraFieldForType(types.get(0).getId());
+               // updateExtraFieldForType(types.get(0).getId());
             }
             logger.info("Завантажено типи аксесуарів: {}", types.size());
         } catch (SQLException e) {
@@ -330,17 +331,33 @@ public class AccessoriesSectionController {
         table.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 AccessoryType type = typeGetter.apply(newVal);
+
+                // Достатньо одного setValue для ComboBox
+                // Очищуємо вибір перед оновленням
+                accessoryTypeComboBox.getSelectionModel().clearSelection();
+                // Встановлюємо нове значення
                 accessoryTypeComboBox.setValue(type);
+
+
+                // Оновлюємо додаткове поле, якщо треба
                 updateExtraFieldForType(type.getId());
+
+                // Встановлюємо значення інших полів
                 extraField.setText(extraFieldValueGetter.apply(newVal));
                 colorField.setText(colorGetter.apply(newVal));
                 extraInfoArea.setText(noteGetter.apply(newVal));
 
+                // Очищаємо вибір в інших таблицях
                 for (TableView<?> other : othersToClear) {
                     other.getSelectionModel().clearSelection();
                 }
             }
         });
+
+        // За бажанням, якщо таблиця не пуста, одразу вибираємо перший рядок
+        if (!table.getItems().isEmpty()) {
+            table.getSelectionModel().selectFirst();
+        }
     }
 
 }

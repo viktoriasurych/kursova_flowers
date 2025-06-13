@@ -16,16 +16,16 @@ public class FlowerInBouquetDAO {
 
     public void createTable() throws SQLException {
         String sql = """
-            CREATE TABLE IF NOT EXISTS flower_in_bouquet (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                flower_id INTEGER NOT NULL,
-                bouquet_id INTEGER NOT NULL,
-                stem_length REAL,
-                quantity INTEGER,
-                FOREIGN KEY(flower_id) REFERENCES flower(id),
-                FOREIGN KEY(bouquet_id) REFERENCES bouquet(id) ON DELETE CASCADE
-            )
-        """;
+        CREATE TABLE IF NOT EXISTS flower_in_bouquet (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            flower_id INTEGER NOT NULL,
+            bouquet_id INTEGER NOT NULL,
+            stem_length REAL,
+            quantity INTEGER,
+            FOREIGN KEY(flower_id) REFERENCES flower(id) ON DELETE CASCADE,
+            FOREIGN KEY(bouquet_id) REFERENCES bouquet(id) ON DELETE CASCADE
+        )
+    """;
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(sql);
         }

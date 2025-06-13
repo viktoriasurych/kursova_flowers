@@ -63,20 +63,29 @@ public class BouquetDAO {
     }
 
     public List<Bouquet> findAll() throws SQLException {
-        List<Bouquet> list = new ArrayList<>();
-        String sql = "SELECT id, name FROM bouquet ORDER BY id DESC";
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+
+        List<Bouquet> bouquets = new ArrayList<>();
+        String sql = "SELECT * FROM bouquet  ORDER BY id DESC";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
             while (rs.next()) {
                 Bouquet bouquet = new Bouquet();
                 bouquet.setId(rs.getInt("id"));
                 bouquet.setName(rs.getString("name"));
-                // Порожні списки, щоб тести проходили:
-                bouquet.setFlowers(new ArrayList<>());
-                bouquet.setAccessories(new ArrayList<>());
-                list.add(bouquet);
+
+                FlowerInBouquetDAO flowerDAO = new FlowerInBouquetDAO(connection);
+                bouquet.setFlowers(flowerDAO.findByBouquetId(bouquet.getId()));
+
+                AccessoryDAO accessoryDAO = new AccessoryDAO(connection);
+                bouquet.setAccessories(accessoryDAO.findByBouquetId(bouquet.getId()));
+
+                bouquets.add(bouquet);
             }
         }
-        return list;
+
+        return bouquets;
+
     }
 }

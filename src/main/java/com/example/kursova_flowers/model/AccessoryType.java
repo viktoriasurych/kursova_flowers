@@ -24,6 +24,20 @@ public class AccessoryType {
         return name;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AccessoryType)) return false;
+        AccessoryType that = (AccessoryType) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
+
+
 }
 
 

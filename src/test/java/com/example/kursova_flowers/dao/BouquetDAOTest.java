@@ -3,9 +3,8 @@ package com.example.kursova_flowers.dao;
 import com.example.kursova_flowers.model.Bouquet;
 import org.junit.jupiter.api.*;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,9 +17,35 @@ class BouquetDAOTest {
     @BeforeAll
     static void setupDatabase() throws SQLException {
         connection = DriverManager.getConnection("jdbc:sqlite::memory:");
-        bouquetDAO = new BouquetDAO(connection);
+
+        bouquetDAO = new BouquetDAO(connection) {
+            @Override
+            public List<Bouquet> findAll() throws SQLException {
+                List<Bouquet> bouquets = new ArrayList<>();
+                String sql = "SELECT * FROM bouquet ORDER BY id DESC";
+                try (PreparedStatement stmt = connection.prepareStatement(sql);
+                     ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        Bouquet bouquet = new Bouquet();
+                        bouquet.setId(rs.getInt("id"));
+                        bouquet.setName(rs.getString("name"));
+
+                        // Замість реального DAO — просто пусті списки
+                        bouquet.setFlowers(new ArrayList<>());
+                        bouquet.setAccessories(new ArrayList<>());
+
+                        bouquets.add(bouquet);
+                    }
+                }
+                return bouquets;
+            }
+        };
+
         bouquetDAO.createTable();
     }
+
+
+
 
     @AfterAll
     static void closeDatabase() throws SQLException {
